@@ -5,21 +5,20 @@ import org.lollipop.wte.LApplication
 import org.lollipop.wte.json.AndroidJson
 import java.io.File
 
-class AndroidPlatform : Platform {
-    override val name: String = "Android ${Build.VERSION.SDK_INT}"
+actual object Platform {
 
-    override val fileDir: File by lazy {
+    actual val name: String = "Android ${Build.VERSION.SDK_INT}"
+
+    actual val fileDir: File by lazy {
         LApplication.application.filesDir
     }
 
-}
+    actual fun parseJsonInfo(info: String): JsonInfo {
+        return AndroidJson.parseInfo(info)
+    }
 
-actual fun getPlatform(): Platform = AndroidPlatform()
+    actual fun parseJsonList(info: String): JsonList {
+        return AndroidJson.parseList(info)
+    }
 
-actual fun parseJsonInfo(info: String): JsonInfo {
-    return AndroidJson.parseInfo(info)
-}
-
-actual fun parseJsonList(info: String): JsonList {
-    return AndroidJson.parseList(info)
 }

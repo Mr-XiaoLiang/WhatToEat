@@ -5,5 +5,5 @@ object Config {
     val platform: Platform by lazy {
         getPlatform()
     }
-    
+
 }
