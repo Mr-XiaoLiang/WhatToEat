@@ -34,6 +34,8 @@ kotlin {
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+            // https://mvnrepository.com/artifact/org.json/json
+            implementation(libs.json)
         }
     }
 }
