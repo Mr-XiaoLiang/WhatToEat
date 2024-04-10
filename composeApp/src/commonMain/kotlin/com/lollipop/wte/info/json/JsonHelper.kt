@@ -5,9 +5,27 @@ import com.lollipop.wte.info.LResult
 import com.lollipop.wte.info.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import whattoeat.composeapp.generated.resources.Res
 import java.io.File
+import java.io.InputStream
 
 object JsonHelper {
+
+    @OptIn(ExperimentalResourceApi::class)
+    suspend fun release(resPath: String,file: File): LResult<Unit> {
+        return withContext(Dispatchers.IO) {
+            try {
+                file.parentFile?.mkdirs()
+                val bytes = Res.readBytes(resPath)
+                file.writeBytes(bytes)
+                LResult.Success(Unit)
+            } catch (e: Throwable) {
+                e.printStackTrace()
+                LResult.Failure(e)
+            }
+        }
+    }
 
     suspend fun readInfo(file: File): LResult<JsonInfo> {
         return read(file).map { Platform.parseJsonInfo(it) }
