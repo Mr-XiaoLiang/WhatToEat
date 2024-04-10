@@ -1,7 +1,7 @@
 package org.lollipop.wte.json
 
-import com.lollipop.wte.json.JsonInfo
-import com.lollipop.wte.json.JsonList
+import com.lollipop.wte.info.json.JsonInfo
+import com.lollipop.wte.info.json.JsonList
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -48,6 +48,9 @@ object AndroidJson {
 class AndroidJsonInfo(val json: JSONObject) : JsonInfo {
 
     override fun toString(tabs: Int): String {
+        if (tabs < 1) {
+            return json.toString()
+        }
         return json.toString(tabs)
     }
 
@@ -109,6 +112,9 @@ class AndroidJsonList(val json: JSONArray) : JsonList {
         }
 
     override fun toString(tabs: Int): String {
+        if (tabs < 1) {
+            return json.toString()
+        }
         return json.toString(tabs)
     }
 

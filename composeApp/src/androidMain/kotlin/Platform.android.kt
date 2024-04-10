@@ -1,6 +1,6 @@
 import android.os.Build
-import com.lollipop.wte.json.JsonInfo
-import com.lollipop.wte.json.JsonList
+import com.lollipop.wte.info.json.JsonInfo
+import com.lollipop.wte.info.json.JsonList
 import org.lollipop.wte.LApplication
 import org.lollipop.wte.json.AndroidJson
 import java.io.File

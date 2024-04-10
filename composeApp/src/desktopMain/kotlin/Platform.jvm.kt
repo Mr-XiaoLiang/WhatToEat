@@ -1,6 +1,6 @@
 import com.lollipop.wte.json.DesktopJson
-import com.lollipop.wte.json.JsonInfo
-import com.lollipop.wte.json.JsonList
+import com.lollipop.wte.info.json.JsonInfo
+import com.lollipop.wte.info.json.JsonList
 import java.io.File
 
 actual object Platform {

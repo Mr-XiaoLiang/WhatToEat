@@ -1,4 +1,4 @@
-package com.lollipop.wte.json
+package com.lollipop.wte.info.json
 
 interface JsonInfo {
 
