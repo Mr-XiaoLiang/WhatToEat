@@ -1,4 +1,4 @@
-package org.lollipop.wte.json
+package com.lollipop.wte.json
 
 import com.lollipop.wte.info.json.JsonInfo
 import com.lollipop.wte.info.json.JsonList

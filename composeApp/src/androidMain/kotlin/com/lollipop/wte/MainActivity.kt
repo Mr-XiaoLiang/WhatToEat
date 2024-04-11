@@ -1,4 +1,4 @@
-package org.lollipop.wte
+package com.lollipop.wte
 
 import App
 import android.os.Bundle

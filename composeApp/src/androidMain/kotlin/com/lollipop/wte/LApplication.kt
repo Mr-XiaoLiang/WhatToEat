@@ -1,4 +1,4 @@
-package org.lollipop.wte
+package com.lollipop.wte
 
 import android.app.Application
 
@@ -11,6 +11,7 @@ class LApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         application = this
+
     }
 
 }
