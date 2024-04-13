@@ -1,3 +1,4 @@
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +13,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
-fun App() {
+fun App(padding: PaddingValues) {
     Initialize.init()
 
     val coroutineScope = rememberCoroutineScope()
@@ -23,5 +24,5 @@ fun App() {
         }
     }
 
-    ContentPage(dataHelper)
+    ContentPage(padding, dataHelper)
 }
