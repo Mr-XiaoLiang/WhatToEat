@@ -60,10 +60,8 @@ fun ContentScaffold(
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth().fillMaxHeight()
     ) {
-        val maxWidth = constraints.maxWidth
-        val maxHeight = constraints.maxHeight
         val isHorizontal = maxWidth > maxHeight
-        val isTablet = maxWidth > 480
+        val isTablet = maxWidth > Config.MIN_TABLET_WIDTH.dp
         if (isHorizontal || isTablet) {
             ContentByTablet(padding, maxWidth, flagPanel, contentPanel)
         } else {
@@ -76,13 +74,14 @@ fun ContentScaffold(
 @Composable
 private fun ContentByTablet(
     padding: PaddingValues,
-    maxWidth: Int,
+    maxWidth: Dp,
     flagPanel: @Composable (PaddingValues, miniMode: Boolean) -> Unit,
     contentPanel: @Composable (PaddingValues) -> Unit,
 ) {
-    var flagWidth = maxWidth * Config.FLAG_PANEL_WIDTH_WEIGHT
-    if (flagWidth > Config.MAX_FLAG_PANEL_WIDTH) {
-        flagWidth = Config.MAX_FLAG_PANEL_WIDTH.toFloat()
+    var flagWidth = (maxWidth * Config.FLAG_PANEL_WIDTH_WEIGHT)
+    val maxFlagWidth = Config.MAX_FLAG_PANEL_WIDTH.dp
+    if (flagWidth > maxFlagWidth) {
+        flagWidth = maxFlagWidth
     }
     val contentWidth = maxWidth - flagWidth
     Row(
@@ -90,7 +89,7 @@ private fun ContentByTablet(
     ) {
 
         Box(
-            modifier = Modifier.width(flagWidth.dp).fillMaxHeight(),
+            modifier = Modifier.width(flagWidth).fillMaxHeight(),
         ) {
             flagPanel(
                 PaddingValuesWrapper(
@@ -101,7 +100,7 @@ private fun ContentByTablet(
             )
         }
 
-        Box(modifier = Modifier.width(contentWidth.dp).fillMaxHeight()) {
+        Box(modifier = Modifier.width(contentWidth).fillMaxHeight()) {
             contentPanel(
                 PaddingValuesWrapper(
                     padding,
@@ -115,14 +114,15 @@ private fun ContentByTablet(
 @Composable
 private fun ContentByPhone(
     padding: PaddingValues,
-    maxHeight: Int,
+    maxHeight: Dp,
     flagPanel: @Composable (PaddingValues, miniMode: Boolean) -> Unit,
     contentPanel: @Composable (PaddingValues) -> Unit,
 ) {
 
     var flagHeight = maxHeight * Config.FLAG_PANEL_HEIGHT_WEIGHT
-    if (flagHeight > Config.MAX_FLAG_PANEL_HEIGHT) {
-        flagHeight = Config.MAX_FLAG_PANEL_HEIGHT.toFloat()
+    val maxFlagHeight = Config.MAX_FLAG_PANEL_HEIGHT.dp
+    if (flagHeight > maxFlagHeight) {
+        flagHeight = maxFlagHeight
     }
 
     Column(
@@ -130,7 +130,7 @@ private fun ContentByPhone(
     ) {
 
         Box(
-            modifier = Modifier.fillMaxWidth().height(flagHeight.dp),
+            modifier = Modifier.fillMaxWidth().height(flagHeight),
         ) {
             flagPanel(
                 PaddingValuesWrapper(

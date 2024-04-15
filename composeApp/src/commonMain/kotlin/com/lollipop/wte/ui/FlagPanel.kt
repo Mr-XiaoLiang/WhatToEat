@@ -12,9 +12,20 @@ import com.lollipop.wte.DataHelper
 
 @Composable
 fun FlagPanel(padding: PaddingValues, data: DataHelper, miniMode: Boolean) {
+    if (miniMode) {
+        FlagPanelByPhone(padding, data)
+    } else {
+        FlagPanelByTablet(padding, data)
+    }
+}
 
-    // TODO
+@Composable
+private fun FlagPanelByPhone(padding: PaddingValues, data: DataHelper) {
+    Text("FlagPanelByPhone", modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Red))
+    //TODO()
+}
 
-    Text("Flag", modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Red))
-
+@Composable
+private fun FlagPanelByTablet(padding: PaddingValues, data: DataHelper) {
+    Text("FlagPanelByTablet", modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Red))
 }

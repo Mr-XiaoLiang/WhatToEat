@@ -12,4 +12,6 @@ object Config {
 
     const val MAX_FLAG_PANEL_HEIGHT = 260
 
+    const val MIN_TABLET_WIDTH = 480
+
 }
