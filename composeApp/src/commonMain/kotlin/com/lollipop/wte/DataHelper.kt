@@ -73,11 +73,12 @@ class DataHelper(
             val jsonInfo = jsonList.optInfo(i) ?: continue
             val itemName = jsonInfo.optString(KEY_NAME, "")
             if (itemName.isNotEmpty()) {
-                val itemInfo = menuInfo.put(itemName)
+                val itemInfo = ItemInfo(itemName)
                 val tagList = jsonInfo.optArray(KEY_TAG)
                 if (tagList != null) {
                     parseItem(itemInfo, tagList)
                 }
+                menuInfo.put(itemInfo)
             }
         }
     }
