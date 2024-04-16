@@ -36,6 +36,14 @@ class DataHelper(
     var currentState = State.IDLE
         private set
 
+    fun fetchMenuList(): List<ItemInfo> {
+        return menuInfo.toList()
+    }
+
+    fun fetchTagList(): List<String> {
+        return menuInfo.copyTagList()
+    }
+
     private var pendingLoad: LoadCallback? = null
 
     private var pendingWrite: WriteCallback? = null

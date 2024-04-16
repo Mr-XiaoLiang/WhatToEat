@@ -12,22 +12,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.lollipop.wte.DataHelper
+import com.lollipop.wte.info.ItemInfo
 
 @Composable
 fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
+
+    val tagList = remember { mutableStateListOf<String>() }
+    val dataList = remember { mutableStateListOf<ItemInfo>() }
+
     MaterialTheme {
         ContentScaffold(
             padding,
             flagPanel = { padding, miniMode ->
-                FlagPanel(padding, dataHelper, miniMode)
+                FlagPanel(padding, tagList, miniMode)
             },
             contentPanel = {
-                MenuListPanel(padding, dataHelper)
+                MenuListPanel(padding, dataList)
             }
         )
 
@@ -92,20 +98,14 @@ private fun ContentByTablet(
             modifier = Modifier.width(flagWidth).fillMaxHeight(),
         ) {
             flagPanel(
-                PaddingValuesWrapper(
-                    padding,
-                    endEnable = false
-                ),
+                padding.wrapperOf(endEdge = PaddingValuesWrapper.Edge.Disable),
                 false
             )
         }
 
         Box(modifier = Modifier.width(contentWidth).fillMaxHeight()) {
             contentPanel(
-                PaddingValuesWrapper(
-                    padding,
-                    startEnable = false
-                ),
+                padding.wrapperOf(startEdge = PaddingValuesWrapper.Edge.Disable)
             )
         }
     }
@@ -133,86 +133,15 @@ private fun ContentByPhone(
             modifier = Modifier.fillMaxWidth().height(flagHeight),
         ) {
             flagPanel(
-                PaddingValuesWrapper(
-                    padding,
-                    bottomEnable = false
-                ),
+                padding.wrapperOf(bottomEdge = PaddingValuesWrapper.Edge.Disable),
                 false
             )
         }
 
         Box(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
             contentPanel(
-                PaddingValuesWrapper(
-                    padding,
-                    topEnable = false
-                ),
+                padding.wrapperOf(topEdge = PaddingValuesWrapper.Edge.Disable)
             )
         }
     }
-}
-
-class PaddingValuesWrapper(
-    private val basePadding: PaddingValues,
-    private val startEnable: Boolean = true,
-    private val topEnable: Boolean = true,
-    private val endEnable: Boolean = true,
-    private val bottomEnable: Boolean = true,
-) : PaddingValues {
-    override fun calculateBottomPadding(): Dp {
-        return if (bottomEnable) {
-            basePadding.calculateBottomPadding()
-        } else {
-            0.dp
-        }
-    }
-
-    override fun calculateLeftPadding(layoutDirection: LayoutDirection): Dp {
-        when (layoutDirection) {
-            LayoutDirection.Ltr -> {
-                return if (startEnable) {
-                    basePadding.calculateLeftPadding(layoutDirection)
-                } else {
-                    0.dp
-                }
-            }
-
-            LayoutDirection.Rtl -> {
-                return if (endEnable) {
-                    basePadding.calculateLeftPadding(layoutDirection)
-                } else {
-                    0.dp
-                }
-            }
-        }
-    }
-
-    override fun calculateRightPadding(layoutDirection: LayoutDirection): Dp {
-        when (layoutDirection) {
-            LayoutDirection.Ltr -> {
-                return if (endEnable) {
-                    basePadding.calculateRightPadding(layoutDirection)
-                } else {
-                    0.dp
-                }
-            }
-
-            LayoutDirection.Rtl -> {
-                return if (startEnable) {
-                    basePadding.calculateRightPadding(layoutDirection)
-                } else {
-                    0.dp
-                }
-            }
-        }
-    }
-
-    override fun calculateTopPadding(): Dp {
-        return if (topEnable) {
-            basePadding.calculateTopPadding()
-        } else {
-            0.dp
-        }
-    }
-
 }

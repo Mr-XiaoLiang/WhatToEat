@@ -23,6 +23,5 @@ fun App(padding: PaddingValues) {
             currentDataState = it
         }
     }
-
     ContentPage(padding, dataHelper)
 }
