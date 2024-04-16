@@ -48,7 +48,7 @@ private fun FlagPanelByPhone(padding: PaddingValues, dataList: SnapshotStateList
             horizontalItemSpacing = 8.dp,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            itemsIndexed(dataList, key = { _, p -> p }) { i, infp ->
+            itemsIndexed(dataList, key = { _, p -> p }) { i, info ->
                 // TODO 创建item
                 Text(
                     "FlagPanelByPhone",
@@ -82,7 +82,7 @@ private fun FlagPanelByTablet(padding: PaddingValues, dataList: SnapshotStateLis
             horizontalItemSpacing = 8.dp,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            itemsIndexed(dataList, key = { _, p -> p }) { i, infp ->
+            itemsIndexed(dataList, key = { _, p -> p }) { i, info ->
                 // TODO 创建item
                 Text(
                     "FlagPanelByPhone",
@@ -91,8 +91,4 @@ private fun FlagPanelByTablet(padding: PaddingValues, dataList: SnapshotStateLis
             }
         }
     }
-    Text(
-        "FlagPanelByTablet",
-        modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Red)
-    )
 }

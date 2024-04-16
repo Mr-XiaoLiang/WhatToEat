@@ -38,7 +38,7 @@ fun MenuListPanel(padding: PaddingValues, dataList: SnapshotStateList<ItemInfo>)
             verticalItemSpacing = 8.dp,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            itemsIndexed(dataList, key = { _, p -> p.name }) { i, infp ->
+            itemsIndexed(dataList, key = { _, p -> p.name }) { i, info ->
                 // TODO 创建item
             }
         }
