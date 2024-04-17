@@ -17,11 +17,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FlagPanel(padding: PaddingValues, dataList: SnapshotStateList<String>, miniMode: Boolean) {
+fun FlagPanel(
+    padding: PaddingValues,
+    miniMode: Boolean,
+    tagList: SnapshotStateList<String>,
+    selectedList: SnapshotStateList<String>
+) {
     if (miniMode) {
-        FlagPanelByPhone(padding, dataList)
+        FlagPanelByPhone(padding, selectedList)
     } else {
-        FlagPanelByTablet(padding, dataList)
+        FlagPanelByTablet(padding, tagList, selectedList)
     }
 }
 
@@ -61,7 +66,11 @@ private fun FlagPanelByPhone(padding: PaddingValues, dataList: SnapshotStateList
 }
 
 @Composable
-private fun FlagPanelByTablet(padding: PaddingValues, dataList: SnapshotStateList<String>) {
+private fun FlagPanelByTablet(
+    padding: PaddingValues,
+    tagList: SnapshotStateList<String>,
+    selectedList: SnapshotStateList<String>
+) {
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth().fillMaxHeight()
     ) {
@@ -82,7 +91,7 @@ private fun FlagPanelByTablet(padding: PaddingValues, dataList: SnapshotStateLis
             horizontalItemSpacing = 8.dp,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            itemsIndexed(dataList, key = { _, p -> p }) { i, info ->
+            itemsIndexed(tagList, key = { _, p -> p }) { i, info ->
                 // TODO 创建item
                 Text(
                     "FlagPanelByPhone",
