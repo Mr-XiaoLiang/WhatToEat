@@ -1,6 +1,5 @@
 package com.lollipop.wte
 
-import Config
 import com.lollipop.wte.initialize.InitLanguage
 
 object Initialize {

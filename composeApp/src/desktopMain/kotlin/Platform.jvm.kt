@@ -1,3 +1,4 @@
+import com.lollipop.wte.Config
 import com.lollipop.wte.info.json.JsonInfo
 import com.lollipop.wte.info.json.JsonList
 import com.lollipop.wte.json.DesktopJson

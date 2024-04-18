@@ -1,3 +1,5 @@
+package com.lollipop.wte
+
 object Config {
 
     const val APP_NAME = "WhatToEat"

@@ -1,3 +1,4 @@
+package com.lollipop.wte
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,11 +18,6 @@ fun App(padding: PaddingValues) {
     Initialize.init()
 
     val coroutineScope = rememberCoroutineScope()
-    var currentDataState by remember { mutableStateOf(DataHelper.State.IDLE) }
-    val dataHelper = remember {
-        DataHelper(coroutineScope) {
-            currentDataState = it
-        }
-    }
+    val dataHelper = remember { DataHelper(coroutineScope) }
     ContentPage(padding, dataHelper)
 }

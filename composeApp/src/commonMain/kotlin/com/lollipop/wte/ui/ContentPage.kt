@@ -1,6 +1,5 @@
 package com.lollipop.wte.ui
 
-import Config
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -12,25 +11,25 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.lollipop.wte.Config
 import com.lollipop.wte.DataHelper
-import com.lollipop.wte.info.ItemInfo
 
 @Composable
 fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
 
-    val tagList = remember { mutableStateListOf<String>() }
-    val dataList = remember { mutableStateListOf<ItemInfo>() }
+    val tagList = remember { dataHelper.allTagList }
+    val dataList = remember { dataHelper.filteredList }
+    val selectTagList = remember { dataHelper.selectTagList }
 
     MaterialTheme {
         ContentScaffold(
             padding,
             flagPanel = { padding, miniMode ->
-                FlagPanel(padding, tagList, miniMode)
+                FlagPanel(padding, miniMode, tagList, selectTagList)
             },
             contentPanel = {
                 MenuListPanel(padding, dataList)
