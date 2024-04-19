@@ -47,6 +47,7 @@ class DataHelper(
     val dataMap = SnapshotStateMap<String, ItemInfo>()
 
     val filteredList = SnapshotStateList<ItemInfo>()
+    val filteredMap = SnapshotStateMap<String, ItemInfo>()
 
     val currentState = mutableStateOf(State.IDLE)
 
@@ -63,6 +64,9 @@ class DataHelper(
         selectTagList.clear()
         selectTagMap.clear()
 
+        filteredList.clear()
+        filteredMap.clear()
+
         allTagList.clear()
         allTagMap.clear()
 
@@ -74,11 +78,38 @@ class DataHelper(
         putInfo(info, true)
     }
 
+    private fun selectItem(item: ItemInfo) {
+        item.tagList.forEach { t ->
+            if (isSelected(t)) {
+                if (!filteredMap.containsKey(item.name)) {
+                    filteredMap[item.name] = item
+                    filteredList.add(item)
+                }
+                return
+            }
+        }
+    }
+
+    private fun unselectItem(item: ItemInfo, removeTag: String) {
+        // 前提是包含，这次我们把它移除
+        if (item.tagList.contains(removeTag)) {
+            // 然后检查是否其他tag是选中的，如果是，那么还应该继续留着
+            item.tagList.forEach { t ->
+                if (isSelected(t)) {
+                    return
+                }
+            }
+            // 否则，我们把它移除
+            filteredMap.remove(item.name)
+            filteredList.remove(item)
+        }
+    }
+
     private fun collectWriteFlow(flow: Flow<Int>) {
         scope.launch {
             flow.collectLatest {
                 delay(200)
-
+                saveInfo()
             }
         }
     }
@@ -124,6 +155,14 @@ class DataHelper(
         return allTagMap.containsKey(tag)
     }
 
+    fun trigger(tag: String) {
+        if (isSelected(tag)) {
+            unselect(tag)
+        } else {
+            selected(tag)
+        }
+    }
+
     private fun isSelected(tag: String): Boolean {
         return selectTagMap.containsKey(tag)
     }
@@ -134,12 +173,21 @@ class DataHelper(
         }
         selectTagMap[tag] = tag
         selectTagList.add(tag)
+        dataList.forEach { item ->
+            selectItem(item)
+        }
         return true
     }
 
     fun unselect(tag: String) {
+        if (!isSelected(tag)) {
+            return
+        }
         selectTagMap.remove(tag)
         selectTagList.remove(tag)
+        dataList.forEach { item ->
+            unselectItem(item, tag)
+        }
     }
 
     private fun hasTag(info: ItemInfo, tag: String): Boolean {

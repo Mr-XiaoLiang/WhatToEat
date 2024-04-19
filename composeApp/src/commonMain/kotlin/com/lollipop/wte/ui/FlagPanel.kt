@@ -11,22 +11,28 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.lollipop.wte.DataHelper
 
 @Composable
 fun FlagPanel(
     padding: PaddingValues,
     miniMode: Boolean,
-    tagList: SnapshotStateList<String>,
-    selectedList: SnapshotStateList<String>
+    dataHelper: DataHelper,
 ) {
+    val tagList = remember { dataHelper.allTagList }
+    val selectedList = remember { dataHelper.selectTagList }
+    val selectedMap = remember { dataHelper.selectTagMap }
+    val onTagClickCallback: (String) -> Unit = remember { dataHelper::trigger }
     if (miniMode) {
         FlagPanelByPhone(padding, selectedList)
     } else {
-        FlagPanelByTablet(padding, tagList, selectedList)
+        FlagPanelByTablet(padding, tagList, selectedMap, onTagClickCallback)
     }
 }
 
@@ -69,7 +75,8 @@ private fun FlagPanelByPhone(padding: PaddingValues, dataList: SnapshotStateList
 private fun FlagPanelByTablet(
     padding: PaddingValues,
     tagList: SnapshotStateList<String>,
-    selectedList: SnapshotStateList<String>
+    selectedMap: SnapshotStateMap<String, String>,
+    onTagClick: (String) -> Unit
 ) {
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth().fillMaxHeight()
