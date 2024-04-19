@@ -171,6 +171,10 @@ class DataHelper(
         if (isSelected(tag)) {
             return false
         }
+        if (selectTagMap.isEmpty()) {
+            filteredMap.clear()
+            filteredList.clear()
+        }
         selectTagMap[tag] = tag
         selectTagList.add(tag)
         dataList.forEach { item ->
@@ -185,6 +189,14 @@ class DataHelper(
         }
         selectTagMap.remove(tag)
         selectTagList.remove(tag)
+        if (selectTagMap.isEmpty()) {
+            // 空了就显示全部
+            filteredMap.clear()
+            filteredList.clear()
+            filteredMap.putAll(dataMap)
+            filteredList.addAll(dataList)
+            return
+        }
         dataList.forEach { item ->
             unselectItem(item, tag)
         }
