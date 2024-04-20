@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -21,18 +20,14 @@ import com.lollipop.wte.DataHelper
 @Composable
 fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
 
-    val tagList = remember { dataHelper.allTagList }
-    val dataList = remember { dataHelper.filteredList }
-    val selectTagList = remember { dataHelper.selectTagList }
-
     MaterialTheme {
         ContentScaffold(
             padding,
             flagPanel = { padding, miniMode ->
-                FlagPanel(padding, miniMode, tagList, selectTagList)
+                FlagPanel(padding, miniMode, dataHelper)
             },
             contentPanel = {
-                MenuListPanel(padding, dataList)
+                MenuListPanel(padding, dataHelper)
             }
         )
 

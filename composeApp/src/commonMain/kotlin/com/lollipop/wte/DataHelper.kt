@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import loggerOf
 import java.io.File
 
 class DataHelper(
@@ -36,6 +37,8 @@ class DataHelper(
         }
 
     }
+
+    private val log = loggerOf()
 
     val allTagList = SnapshotStateList<String>()
     val allTagMap = SnapshotStateMap<String, String>()
@@ -156,6 +159,7 @@ class DataHelper(
     }
 
     fun trigger(tag: String) {
+        log("trigger $tag")
         if (isSelected(tag)) {
             unselect(tag)
         } else {
@@ -168,9 +172,12 @@ class DataHelper(
     }
 
     fun selected(tag: String): Boolean {
+        log("selected $tag")
         if (isSelected(tag)) {
+            log("selected isSelected = true")
             return false
         }
+        log("selected before size = ${filteredList.size}")
         if (selectTagMap.isEmpty()) {
             filteredMap.clear()
             filteredList.clear()
@@ -180,15 +187,33 @@ class DataHelper(
         dataList.forEach { item ->
             selectItem(item)
         }
+        log("selected after size = ${filteredList.size}")
         return true
     }
 
     fun unselect(tag: String) {
+        log("unselect $tag")
         if (!isSelected(tag)) {
+            log("unselect isSelected = false")
             return
         }
         selectTagMap.remove(tag)
         selectTagList.remove(tag)
+        if (passAllBySelectEmpty()) {
+            log("unselect passAllBySelectEmpty")
+            return
+        }
+        log("unselect before size = ${filteredList.size}")
+        dataList.forEach { item ->
+            unselectItem(item, tag)
+        }
+        log("unselect after size = ${filteredList.size}")
+    }
+
+    private fun updateSelect() {
+        if (passAllBySelectEmpty()) {
+            return
+        }
         if (selectTagMap.isEmpty()) {
             // 空了就显示全部
             filteredMap.clear()
@@ -197,9 +222,23 @@ class DataHelper(
             filteredList.addAll(dataList)
             return
         }
+        filteredMap.clear()
+        filteredList.clear()
         dataList.forEach { item ->
-            unselectItem(item, tag)
+            selectItem(item)
         }
+    }
+
+    private fun passAllBySelectEmpty(): Boolean {
+        if (selectTagMap.isEmpty()) {
+            // 空了就显示全部
+            filteredMap.clear()
+            filteredList.clear()
+            filteredMap.putAll(dataMap)
+            filteredList.addAll(dataList)
+            return true
+        }
+        return false
     }
 
     private fun hasTag(info: ItemInfo, tag: String): Boolean {
@@ -211,6 +250,7 @@ class DataHelper(
     }
 
     fun load() {
+//        log("load filteredList is ${System.identityHashCode(filteredList)}")
         if (currentState.value != State.IDLE) {
             isPendingLoad = true
             return
@@ -234,6 +274,8 @@ class DataHelper(
                         parseMenu(jsonList, false)
                     }
                 }
+                // 加载之后刷新一次
+                updateSelect()
             }
             changeState(State.IDLE)
         }

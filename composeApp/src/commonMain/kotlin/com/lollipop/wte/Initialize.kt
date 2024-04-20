@@ -10,7 +10,7 @@ object Initialize {
         InitLanguage
     )
 
-    fun init() {
+    fun init(firstCallback: () -> Unit) {
         if (isInit) {
             return
         }
@@ -20,6 +20,7 @@ object Initialize {
             }
         }
         isInit = true
+        firstCallback()
     }
 
     private fun safeInit(block: () -> Unit) {

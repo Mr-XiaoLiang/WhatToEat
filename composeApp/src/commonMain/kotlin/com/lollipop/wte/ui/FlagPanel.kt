@@ -1,14 +1,22 @@
 package com.lollipop.wte.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
+import androidx.compose.foundation.onClick
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -28,11 +36,10 @@ fun FlagPanel(
     val tagList = remember { dataHelper.allTagList }
     val selectedList = remember { dataHelper.selectTagList }
     val selectedMap = remember { dataHelper.selectTagMap }
-    val onTagClickCallback: (String) -> Unit = remember { dataHelper::trigger }
     if (miniMode) {
         FlagPanelByPhone(padding, selectedList)
     } else {
-        FlagPanelByTablet(padding, tagList, selectedMap, onTagClickCallback)
+        FlagPanelByTablet(padding, tagList, selectedMap, dataHelper::trigger)
     }
 }
 
@@ -60,17 +67,23 @@ private fun FlagPanelByPhone(padding: PaddingValues, dataList: SnapshotStateList
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             itemsIndexed(dataList, key = { _, p -> p }) { i, info ->
-                // TODO 创建item
-                Text(
-                    "FlagPanelByPhone",
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Red)
-                )
+                Card(
+                    modifier = Modifier.fillMaxHeight().wrapContentWidth()
+                        .background(Color.Red, shape = RoundedCornerShape(6.dp)),
+                ) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                        text = info
+                    )
+                }
             }
         }
     }
 
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FlagPanelByTablet(
     padding: PaddingValues,
@@ -99,11 +112,25 @@ private fun FlagPanelByTablet(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             itemsIndexed(tagList, key = { _, p -> p }) { i, info ->
-                // TODO 创建item
-                Text(
-                    "FlagPanelByPhone",
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Red)
-                )
+                val isSelect = selectedMap.containsKey(info)
+                Card(
+                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
+                        .background(
+                            if (isSelect) {
+                                Color.Red
+                            } else {
+                                Color.Blue
+                            }, shape = RoundedCornerShape(6.dp)
+                        ).combinedClickable {
+                            onTagClick(info)
+                        },
+                ) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                        text = info
+                    )
+                }
             }
         }
     }

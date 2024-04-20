@@ -15,9 +15,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun App(padding: PaddingValues) {
-    Initialize.init()
-
     val coroutineScope = rememberCoroutineScope()
     val dataHelper = remember { DataHelper(coroutineScope) }
+    Initialize.init {
+        dataHelper.load()
+    }
     ContentPage(padding, dataHelper)
 }
