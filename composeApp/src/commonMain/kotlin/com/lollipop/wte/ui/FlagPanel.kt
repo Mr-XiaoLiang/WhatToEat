@@ -11,10 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
-import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
@@ -24,6 +25,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.lollipop.wte.DataHelper
 
@@ -99,36 +101,34 @@ private fun FlagPanelByTablet(
         if (spanCount < 1) {
             spanCount = 1
         }
-        LazyHorizontalStaggeredGrid(
+        LazyColumn(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-            rows = StaggeredGridCells.Fixed(spanCount),
             contentPadding = padding.wrapperOf(
                 topEdge = PaddingValuesWrapper.Edge.Max(8.dp),
                 startEdge = PaddingValuesWrapper.Edge.Max(8.dp),
                 endEdge = PaddingValuesWrapper.Edge.Max(8.dp),
                 bottomEdge = PaddingValuesWrapper.Edge.Max(8.dp)
             ),
-            horizontalItemSpacing = 8.dp,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             itemsIndexed(tagList, key = { _, p -> p }) { i, info ->
                 val isSelect = selectedMap.containsKey(info)
                 Card(
                     modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                        .background(
-                            if (isSelect) {
-                                Color.Red
-                            } else {
-                                Color.Blue
-                            }, shape = RoundedCornerShape(6.dp)
-                        ).combinedClickable {
+                        .combinedClickable {
                             onTagClick(info)
                         },
                 ) {
+                    val sf = if (isSelect) {
+                        " *"
+                    } else {
+                        ""
+                    }
                     Text(
                         modifier = Modifier.fillMaxWidth()
                             .padding(horizontal = 8.dp, vertical = 6.dp),
-                        text = info
+                        text = info + sf,
+                        textAlign = TextAlign.Center
                     )
                 }
             }
