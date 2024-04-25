@@ -1,12 +1,13 @@
 package com.lollipop.wte.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -16,7 +17,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.lollipop.wte.DataHelper
@@ -48,17 +47,12 @@ fun FlagPanel(
 @Composable
 private fun FlagPanelByPhone(padding: PaddingValues, dataList: SnapshotStateList<String>) {
 
-    BoxWithConstraints(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight()
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        val itemHeight = 60.dp
-        var spanCount = (maxHeight / itemHeight).toInt()
-        if (spanCount < 1) {
-            spanCount = 1
-        }
         LazyHorizontalStaggeredGrid(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-            rows = StaggeredGridCells.Fixed(spanCount),
+            modifier = Modifier.fillMaxSize(),
+            rows = StaggeredGridCells.Adaptive(40.dp),
             contentPadding = padding.wrapperOf(
                 topEdge = PaddingValuesWrapper.Edge.Max(8.dp),
                 startEdge = PaddingValuesWrapper.Edge.Max(8.dp),
@@ -66,23 +60,22 @@ private fun FlagPanelByPhone(padding: PaddingValues, dataList: SnapshotStateList
                 bottomEdge = PaddingValuesWrapper.Edge.Max(8.dp)
             ),
             horizontalItemSpacing = 8.dp,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             itemsIndexed(dataList, key = { _, p -> p }) { i, info ->
                 Card(
-                    modifier = Modifier.fillMaxHeight().wrapContentWidth()
-                        .background(Color.Red, shape = RoundedCornerShape(6.dp)),
+                    modifier = Modifier.fillMaxHeight().wrapContentWidth(),
                 ) {
                     Text(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                        modifier = Modifier.fillMaxHeight().wrapContentWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                        textAlign = TextAlign.Center,
                         text = info
                     )
                 }
             }
         }
     }
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -96,11 +89,6 @@ private fun FlagPanelByTablet(
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth().fillMaxHeight()
     ) {
-        val itemHeight = 60.dp
-        var spanCount = (maxHeight / itemHeight).toInt()
-        if (spanCount < 1) {
-            spanCount = 1
-        }
         LazyColumn(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             contentPadding = padding.wrapperOf(

@@ -130,7 +130,7 @@ private fun ContentByPhone(
         ) {
             flagPanel(
                 padding.wrapperOf(bottomEdge = PaddingValuesWrapper.Edge.Disable),
-                false
+                true
             )
         }
 
