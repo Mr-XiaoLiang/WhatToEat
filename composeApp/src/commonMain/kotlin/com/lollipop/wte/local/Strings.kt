@@ -19,4 +19,6 @@ interface LocalStrings {
 
     val localId: String
 
+    val selectNewTag: String
+
 }

@@ -12,6 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -22,11 +26,17 @@ import com.lollipop.wte.DataHelper
 @Composable
 fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
 
+    var showFlagDialog by remember { mutableStateOf(false) }
+
     MaterialTheme {
         ContentScaffold(
             padding,
             flagPanel = { padding, miniMode ->
-                FlagPanel(padding, miniMode, dataHelper)
+                FlagPanel(padding, miniMode, dataHelper) {
+                    if (!showFlagDialog) {
+                        showFlagDialog = true
+                    }
+                }
             },
             contentPanel = {
                 MenuListPanel(padding, dataHelper)
