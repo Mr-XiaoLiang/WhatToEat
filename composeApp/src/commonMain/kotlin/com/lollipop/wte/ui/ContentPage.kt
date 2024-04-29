@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
+import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,12 +32,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lollipop.wte.Config
 import com.lollipop.wte.DataHelper
+import com.lollipop.wte.local.Strings
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
 
     var showTagDialog by remember { mutableStateOf(false) }
+    var showTagFilter by remember { mutableStateOf(false) }
+    val selectorList = remember { dataHelper.selectTagList }
     val dialogBackground by animateColorAsState(
         if (showTagDialog) {
             Color(0x33000000)
@@ -53,11 +58,30 @@ fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
                         showTagDialog = true
                     }
                 }
+                showTagFilter = miniMode
             },
             contentPanel = {
                 MenuListPanel(padding, dataHelper)
             }
         )
+
+        if (showTagFilter && selectorList.isNotEmpty()) {
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val top = maxHeight * Config.FLAG_PANEL_HEIGHT_WEIGHT
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 0.dp),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Box(modifier = Modifier.height(top - 28.dp).fillMaxWidth())
+                    ExtendedFloatingActionButton(
+                        text = {
+                            Text(text = Strings.current.selectNewTag)
+                        },
+                        onClick = { showTagDialog = true }
+                    )
+                }
+            }
+        }
 
         Column(
             modifier = Modifier.fillMaxSize().background(dialogBackground)
