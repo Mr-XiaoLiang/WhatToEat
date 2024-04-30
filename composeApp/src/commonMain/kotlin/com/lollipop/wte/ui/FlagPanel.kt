@@ -1,6 +1,7 @@
 package com.lollipop.wte.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -27,6 +28,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.lollipop.wte.DataHelper
@@ -91,6 +93,7 @@ private fun FlagPanelByPhone(
                     ) {
                         Text(
                             modifier = Modifier.fillMaxHeight().wrapContentWidth()
+                                .background(getItemColor(true))
                                 .padding(horizontal = 16.dp, vertical = 6.dp),
                             textAlign = TextAlign.Center,
                             text = info
@@ -131,19 +134,26 @@ private fun FlagPanelByTablet(
                             onTagClick(info)
                         },
                 ) {
-                    val sf = if (isSelect) {
-                        " *"
-                    } else {
-                        ""
-                    }
                     Text(
                         modifier = Modifier.fillMaxWidth()
+                            .background(getItemColor(isSelect))
                             .padding(horizontal = 8.dp, vertical = 6.dp),
-                        text = info + sf,
+                        text = info,
                         textAlign = TextAlign.Center
                     )
                 }
             }
         }
+    }
+}
+
+private val colorSelect = Color(0xFF3333AA)
+private val colorDefault = Color.White
+
+private fun getItemColor(selected: Boolean): Color {
+    return if (selected) {
+        colorSelect
+    } else {
+        colorDefault
     }
 }
