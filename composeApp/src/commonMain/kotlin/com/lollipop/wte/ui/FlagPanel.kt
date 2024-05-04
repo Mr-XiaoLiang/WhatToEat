@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -87,17 +88,22 @@ private fun FlagPanelByPhone(
                 horizontalItemSpacing = 8.dp,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                itemsIndexed(dataList, key = { _, p -> p }) { i, info ->
+                itemsIndexed(dataList, key = { _, p -> p }) { _, info ->
                     Card(
                         modifier = Modifier.fillMaxHeight().wrapContentWidth(),
                     ) {
-                        Text(
+                        Box(
                             modifier = Modifier.fillMaxHeight().wrapContentWidth()
-                                .background(getItemColor(true))
-                                .padding(horizontal = 16.dp, vertical = 6.dp),
-                            textAlign = TextAlign.Center,
-                            text = info
-                        )
+                                .background(getItemBackgroundColor(true))
+                                .padding(horizontal = 26.dp, vertical = 0.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                color = getItemContentColor(true),
+                                text = info,
+                            )
+                        }
                     }
                 }
             }
@@ -126,7 +132,7 @@ private fun FlagPanelByTablet(
             ),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            itemsIndexed(tagList, key = { _, p -> p }) { i, info ->
+            itemsIndexed(tagList, key = { _, p -> p }) { _, info ->
                 val isSelect = selectedMap.containsKey(info)
                 Card(
                     modifier = Modifier.fillMaxWidth().wrapContentHeight()
@@ -136,10 +142,11 @@ private fun FlagPanelByTablet(
                 ) {
                     Text(
                         modifier = Modifier.fillMaxWidth()
-                            .background(getItemColor(isSelect))
+                            .background(getItemBackgroundColor(isSelect))
                             .padding(horizontal = 8.dp, vertical = 6.dp),
                         text = info,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = getItemContentColor(isSelect),
                     )
                 }
             }
@@ -147,13 +154,18 @@ private fun FlagPanelByTablet(
     }
 }
 
-private val colorSelect = Color(0xFF3333AA)
-private val colorDefault = Color.White
-
-private fun getItemColor(selected: Boolean): Color {
+private fun getItemBackgroundColor(selected: Boolean): Color {
     return if (selected) {
-        colorSelect
+        LColor.themeColor
     } else {
-        colorDefault
+        LColor.content
+    }
+}
+
+private fun getItemContentColor(selected: Boolean): Color {
+    return if (selected) {
+        LColor.onThemeColor
+    } else {
+        LColor.onContent
     }
 }
