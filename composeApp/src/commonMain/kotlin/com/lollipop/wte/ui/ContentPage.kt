@@ -1,10 +1,7 @@
 package com.lollipop.wte.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -34,20 +31,14 @@ import com.lollipop.wte.Config
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.local.Strings
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
 
     var showTagDialog by remember { mutableStateOf(false) }
     var showTagFilter by remember { mutableStateOf(false) }
     val selectorList = remember { dataHelper.selectTagList }
-    val dialogBackground by animateColorAsState(
-        if (showTagDialog) {
-            Color(0x33000000)
-        } else {
-            Color.Transparent
-        }
-    )
+
+    var showManagerPanel by remember { mutableStateOf(false) }
 
     MaterialTheme {
         ContentScaffold(
@@ -83,28 +74,19 @@ fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
             }
         }
 
-        Column(
-            modifier = Modifier.fillMaxSize().background(dialogBackground)
-        ) {
-            AnimatedVisibility(visible = showTagDialog) {
-                Column(
-                    Modifier.fillMaxSize().padding(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8F)
-                    ) {
-                        FlagPanel(padding, false, dataHelper) {}
-                    }
-                    Box(
-                        modifier = Modifier.fillMaxSize().combinedClickable(enabled = true) {
-                            if (showTagDialog) {
-                                showTagDialog = false
-                            }
-                        }
-                    )
-                }
+        BottomSheetDialog(show = showTagDialog, callClose = { showTagDialog = false }) {
+            Card(
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8F)
+            ) {
+                FlagPanel(padding, false, dataHelper) {}
             }
+        }
+
+        BottomSheetDialog(
+            show = showManagerPanel,
+            callClose = { showManagerPanel = false }
+        ) {
+            ManagerPanel(padding, dataHelper)
         }
 
 //        var showContent by remember { mutableStateOf(false) }
