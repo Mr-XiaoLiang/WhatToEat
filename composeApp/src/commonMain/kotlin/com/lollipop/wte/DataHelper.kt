@@ -81,6 +81,15 @@ class DataHelper(
         putInfo(info, true)
     }
 
+    fun removeInfo(info: ItemInfo) {
+        val name = info.name
+        val removedInfo = filteredMap.remove(name)
+        filteredList.remove(removedInfo)
+        scope.launch {
+            writeFlow.emit(1)
+        }
+    }
+
     private fun selectItem(item: ItemInfo) {
         item.tagList.forEach { t ->
             if (isSelected(t)) {
