@@ -1,6 +1,7 @@
 package com.lollipop.wte.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -14,8 +15,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.ExtendedFloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lollipop.wte.Config
@@ -43,9 +47,24 @@ fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
         ContentScaffold(
             padding,
             flagPanel = { padding, miniMode ->
-                FlagPanel(padding, miniMode, dataHelper) {
-                    if (!showTagDialog) {
-                        showTagDialog = true
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(
+                            onClick = {
+                                showManagerPanel = true
+                            },
+                            modifier = Modifier.width(48.dp).height(48.dp).padding(12.dp)
+                        ) {
+                            Icon(Icons.Default.Settings, "Settings", tint = LColor.onBackground)
+                        }
+                    }
+                    FlagPanel(padding, miniMode, dataHelper) {
+                        if (!showTagDialog) {
+                            showTagDialog = true
+                        }
                     }
                 }
                 showTagFilter = miniMode
@@ -73,7 +92,7 @@ fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
             }
         }
 
-        BottomSheetDialog(show = showTagDialog, callClose = { showTagDialog = false }) {
+        TopSheetDialog(show = showTagDialog, callClose = { showTagDialog = false }) {
             Card(
                 modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8F)
             ) {
@@ -81,7 +100,7 @@ fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
             }
         }
 
-        BottomSheetDialog(
+        TopSheetDialog(
             show = showManagerPanel,
             callClose = { showManagerPanel = false }
         ) {
@@ -115,7 +134,7 @@ fun ContentScaffold(
     contentPanel: @Composable (PaddingValues) -> Unit,
 ) {
     BoxWithConstraints(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color(0xFFEEEEEE.toInt()))
+        modifier = Modifier.fillMaxWidth().fillMaxHeight().background(LColor.background)
     ) {
         val isHorizontal = maxWidth > maxHeight
         val isTablet = maxWidth > Config.MIN_TABLET_WIDTH.dp

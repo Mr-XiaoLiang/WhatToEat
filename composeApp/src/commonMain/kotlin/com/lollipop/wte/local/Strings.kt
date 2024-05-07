@@ -21,4 +21,10 @@ interface LocalStrings {
 
     val selectNewTag: String
 
+    fun hintRemoveItem(name: String): String
+
+    val confirm: String
+
+    val cancel: String
+
 }

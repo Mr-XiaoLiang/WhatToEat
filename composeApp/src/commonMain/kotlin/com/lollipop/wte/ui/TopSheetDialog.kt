@@ -6,26 +6,21 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BottomSheetDialog(
+fun TopSheetDialog(
     show: Boolean,
-    callClose: () -> Unit,
-    content: @Composable ColumnScope.() -> Unit
+    callClose: DialogInterface,
+    content: @Composable BoxScope.(DialogInterface) -> Unit
 ) {
 
     val dialogBackground by animateColorAsState(
@@ -40,19 +35,23 @@ fun BottomSheetDialog(
         modifier = Modifier.fillMaxSize().background(dialogBackground)
     ) {
         AnimatedVisibility(visible = show) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopCenter
             ) {
-                content()
                 Box(
                     modifier = Modifier.fillMaxSize().combinedClickable(
                         enabled = true,
                     ) {
-                        callClose()
+                        callClose.dismiss()
                     }
                 )
+                content(callClose)
             }
         }
     }
+}
+
+fun interface DialogInterface {
+    fun dismiss()
 }

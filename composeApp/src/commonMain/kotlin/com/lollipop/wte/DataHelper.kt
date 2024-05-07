@@ -85,6 +85,8 @@ class DataHelper(
         val name = info.name
         val removedInfo = filteredMap.remove(name)
         filteredList.remove(removedInfo)
+        val removed = dataMap.remove(name)
+        dataList.remove(removed)
         scope.launch {
             writeFlow.emit(1)
         }
