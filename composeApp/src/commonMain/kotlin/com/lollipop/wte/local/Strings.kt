@@ -27,4 +27,12 @@ interface LocalStrings {
 
     val cancel: String
 
+    val newItemLabel: String
+
+    val itemTagLabel: String
+
+    val newTagLabel: String
+
+    val nameAlreadyExists: String
+
 }

@@ -129,6 +129,9 @@ class DataHelper(
     }
 
     private fun putInfo(info: ItemInfo, save: Boolean) {
+        if (info.name.isEmpty()) {
+            return
+        }
         synchronized(this) {
             // tag 添加到集合中
             info.tagList.forEach { putTag(it) }
@@ -149,7 +152,7 @@ class DataHelper(
         }
     }
 
-    private fun putTag(tag: String) {
+    fun putTag(tag: String) {
         if (hasTag(tag)) {
             return
         }

@@ -12,4 +12,8 @@ object LocalStringsCn : LocalStrings {
 
     override val confirm: String = "确定"
     override val cancel: String = "取消"
+    override val newItemLabel: String = "名称"
+    override val itemTagLabel: String = "标签"
+    override val newTagLabel: String = "新增标签"
+    override val nameAlreadyExists: String = "名称已经存在"
 }
