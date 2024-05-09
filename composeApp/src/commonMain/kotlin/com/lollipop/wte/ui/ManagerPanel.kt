@@ -105,6 +105,7 @@ fun ManagerPanel(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(item.name, color = LColor.onContent)
                         }
+                        Spacer(modifier = Modifier.height(8.dp))
                         FlowRow(
                             modifier = Modifier.fillMaxWidth().wrapContentHeight()
                         ) {
@@ -120,6 +121,7 @@ fun ManagerPanel(
                                 )
                             }
                         }
+                        Spacer(modifier = Modifier.height(8.dp))
                         Box(
                             modifier = Modifier.fillMaxWidth(0.9F).height(1.dp)
                                 .background(LColor.background)
@@ -153,7 +155,8 @@ fun ItemRemovePanel(
     dialog: DialogInterface
 ) {
     BoxWithConstraints(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
     ) {
         val width = max(min(maxWidth * 0.6F, 480.dp), 260.dp)
         Card(
