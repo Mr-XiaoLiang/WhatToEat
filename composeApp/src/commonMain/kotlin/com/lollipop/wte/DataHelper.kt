@@ -1,7 +1,9 @@
 package com.lollipop.wte
 
 import Platform
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.lollipop.wte.info.ItemInfo
@@ -52,16 +54,10 @@ class DataHelper(
     val filteredList = SnapshotStateList<ItemInfo>()
     val filteredMap = SnapshotStateMap<String, ItemInfo>()
 
-    val currentState = mutableStateOf(State.IDLE)
+    var currentState by mutableStateOf(State.IDLE)
 
     private var isPendingLoad = false
     private var isPendingSave = false
-
-    private val writeFlow by lazy {
-        MutableSharedFlow<Int>().apply {
-            collectWriteFlow(this)
-        }
-    }
 
     private fun clear() {
         selectTagList.clear()
@@ -87,9 +83,7 @@ class DataHelper(
         filteredList.remove(removedInfo)
         val removed = dataMap.remove(name)
         dataList.remove(removed)
-        scope.launch {
-            writeFlow.emit(1)
-        }
+        saveInfo()
     }
 
     private fun selectItem(item: ItemInfo) {
@@ -119,15 +113,6 @@ class DataHelper(
         }
     }
 
-    private fun collectWriteFlow(flow: Flow<Int>) {
-        scope.launch {
-            flow.collectLatest {
-                delay(200)
-                saveInfo()
-            }
-        }
-    }
-
     private fun putInfo(info: ItemInfo, save: Boolean) {
         if (info.name.isEmpty()) {
             return
@@ -146,9 +131,8 @@ class DataHelper(
             }
         }
         if (save) {
-            scope.launch {
-                writeFlow.emit(1)
-            }
+            updateSelect()
+            saveInfo()
         }
     }
 
@@ -265,7 +249,7 @@ class DataHelper(
 
     fun load() {
 //        log("load filteredList is ${System.identityHashCode(filteredList)}")
-        if (currentState.value != State.IDLE) {
+        if (currentState != State.IDLE) {
             isPendingLoad = true
             return
         }
@@ -313,7 +297,7 @@ class DataHelper(
     }
 
     private fun saveInfo() {
-        if (currentState.value != State.IDLE) {
+        if (currentState != State.IDLE) {
             isPendingSave = true
             return
         }
@@ -389,7 +373,7 @@ class DataHelper(
     }
 
     private fun changeState(newState: State) {
-        this.currentState.value = newState
+        this.currentState = newState
         if (newState == State.IDLE) {
             if (isPendingLoad) {
                 load()
