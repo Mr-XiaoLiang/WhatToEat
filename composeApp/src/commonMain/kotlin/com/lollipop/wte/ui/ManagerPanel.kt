@@ -52,8 +52,13 @@ import androidx.compose.ui.unit.sp
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.info.ItemInfo
 import com.lollipop.wte.local.Strings
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import whattoeat.composeapp.generated.resources.Res
+import whattoeat.composeapp.generated.resources.download_24dp
+import whattoeat.composeapp.generated.resources.upload_24dp
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
 @Composable
 fun ManagerPanel(
     padding: PaddingValues,
@@ -74,6 +79,20 @@ fun ManagerPanel(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.End
         ) {
+            IconButton(
+                onClick = {
+                    // TODO
+                }
+            ) {
+                Icon(painterResource(Res.drawable.download_24dp), "")
+            }
+            IconButton(
+                onClick = {
+                    // TODO
+                }
+            ) {
+                Icon(painterResource(Res.drawable.upload_24dp), "")
+            }
             IconButton(
                 onClick = {
                     itemAddPanel = true
