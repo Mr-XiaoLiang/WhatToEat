@@ -79,27 +79,34 @@ fun ManagerPanel(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.End
         ) {
-            IconButton(
-                onClick = {
-                    // TODO
-                }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
             ) {
-                Icon(painterResource(Res.drawable.download_24dp), "")
-            }
-            IconButton(
-                onClick = {
-                    // TODO
+                IconButton(
+                    onClick = {
+                        // TODO
+                    }
+                ) {
+                    Icon(painterResource(Res.drawable.download_24dp), "")
                 }
-            ) {
-                Icon(painterResource(Res.drawable.upload_24dp), "")
-            }
-            IconButton(
-                onClick = {
-                    itemAddPanel = true
+                IconButton(
+                    onClick = {
+                        // TODO
+                    }
+                ) {
+                    Icon(painterResource(Res.drawable.upload_24dp), "")
                 }
-            ) {
-                Icon(Icons.Filled.Add, "")
+                IconButton(
+                    onClick = {
+                        itemAddPanel = true
+                    }
+                ) {
+                    Icon(Icons.Filled.Add, "")
+                }
             }
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
