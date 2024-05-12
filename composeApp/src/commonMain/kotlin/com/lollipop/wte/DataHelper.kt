@@ -12,10 +12,6 @@ import com.lollipop.wte.info.json.JsonHelper
 import com.lollipop.wte.info.json.JsonInfo
 import com.lollipop.wte.info.json.JsonList
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import loggerOf
 import java.io.File
@@ -279,21 +275,29 @@ class DataHelper(
         }
     }
 
-    fun addList(info: String) {
+    fun parseList(info: String): List<ItemInfo> {
+        val list = ArrayList<ItemInfo>()
         try {
             val trimInfo = info.trim()
             val isArray = trimInfo.startsWith("[")
-            val isObj = trimInfo.startsWith("{")
             if (isArray) {
                 val jsonList = Platform.parseJsonList(trimInfo)
-                parseMenu(jsonList, true)
-            } else if (isObj) {
-                val jsonInfo = Platform.parseJsonInfo(trimInfo)
-                parseItem(jsonInfo, true)
+                parseMenu(jsonList) {
+                    list.add(it)
+                }
+            } else {
+                val isObj = trimInfo.startsWith("{")
+                if (isObj) {
+                    val jsonInfo = Platform.parseJsonInfo(trimInfo)
+                    parseItem(jsonInfo)?.let {
+                        list.add(it)
+                    }
+                }
             }
         } catch (e: Throwable) {
             e.printStackTrace()
         }
+        return list
     }
 
     private fun saveInfo() {
@@ -329,14 +333,27 @@ class DataHelper(
     }
 
     private fun parseMenu(jsonList: JsonList, save: Boolean) {
+        parseMenu(jsonList) { itemInfo ->
+            putInfo(itemInfo, save)
+        }
+    }
+
+    private fun parseMenu(jsonList: JsonList, outCallback: (ItemInfo) -> Unit) {
         val size = jsonList.size
         for (i in 0 until size) {
             val jsonInfo = jsonList.optInfo(i) ?: continue
-            parseItem(jsonInfo, save)
+            parseItem(jsonInfo)?.let {
+                outCallback(it)
+            }
         }
     }
 
     private fun parseItem(jsonInfo: JsonInfo, save: Boolean) {
+        val itemInfo = parseItem(jsonInfo) ?: return
+        putInfo(itemInfo, save)
+    }
+
+    private fun parseItem(jsonInfo: JsonInfo): ItemInfo? {
         val itemName = jsonInfo.optString(KEY_NAME, "")
         if (itemName.isNotEmpty()) {
             val itemInfo = ItemInfo(itemName)
@@ -344,8 +361,9 @@ class DataHelper(
             if (tagList != null) {
                 parseItem(itemInfo, tagList)
             }
-            putInfo(itemInfo, save)
+            return itemInfo
         }
+        return null
     }
 
     private fun parseItem(itemInfo: ItemInfo, tagList: JsonList) {
