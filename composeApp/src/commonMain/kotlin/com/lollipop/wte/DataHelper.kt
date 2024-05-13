@@ -132,6 +132,17 @@ class DataHelper(
         }
     }
 
+    fun runWith(callback: suspend CoroutineScope.(DataHelper) -> Unit) {
+        val helper = this
+        launch {
+            callback(helper)
+        }
+    }
+
+    private fun launch(callback: suspend CoroutineScope.() -> Unit) {
+        scope.launch(block = callback)
+    }
+
     fun putTag(tag: String) {
         if (hasTag(tag)) {
             return
@@ -239,7 +250,7 @@ class DataHelper(
         return info.has(tag)
     }
 
-    private fun optItem(name: String): ItemInfo? {
+    fun optItem(name: String): ItemInfo? {
         return dataMap[name]
     }
 
@@ -251,7 +262,7 @@ class DataHelper(
         }
         changeState(State.LOADING)
         isPendingLoad = false
-        scope.launch {
+        launch {
             tryDo {
                 val menuFile = getMenuFile()
                 if (!menuFile.exists()) {
@@ -307,7 +318,7 @@ class DataHelper(
         }
         changeState(State.WRITING)
         isPendingSave = false
-        scope.launch {
+        launch {
             tryDo {
                 val jsonInfo = serializeMenu(ArrayList(dataList.toList()))
                 val menuFile = getMenuFile()
@@ -315,6 +326,10 @@ class DataHelper(
             }
             changeState(State.IDLE)
         }
+    }
+
+    fun toJson(): String {
+        return serializeMenu(ArrayList(dataList.toList())).toString(4)
     }
 
     private fun serializeMenu(list: List<ItemInfo>): JsonList {

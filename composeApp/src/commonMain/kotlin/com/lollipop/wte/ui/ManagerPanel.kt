@@ -72,6 +72,9 @@ fun ManagerPanel(
     val itemList = remember { dataHelper.dataList }
     var pendingRemoveItem by remember { mutableStateOf(ItemInfo.EMPTY) }
 
+    var inputPanel by remember { mutableStateOf(false) }
+    var outputPanel by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8F).background(LColor.background)
     ) {
@@ -86,14 +89,14 @@ fun ManagerPanel(
             ) {
                 IconButton(
                     onClick = {
-                        // TODO
+                        inputPanel = true
                     }
                 ) {
                     Icon(painterResource(Res.drawable.download_24dp), "")
                 }
                 IconButton(
                     onClick = {
-                        // TODO
+                        outputPanel = true
                     }
                 ) {
                     Icon(painterResource(Res.drawable.upload_24dp), "")
@@ -168,6 +171,20 @@ fun ManagerPanel(
 
     TopSheetDialog(itemAddPanel, callClose = { itemAddPanel = false }) {
         ItemAddPanel(nameValue, selectedMap, padding, dataHelper, it)
+    }
+
+    TopSheetDialog(
+        show = inputPanel,
+        callClose = { inputPanel = false }
+    ) {
+        MenuInputPanel(padding, dataHelper)
+    }
+
+    TopSheetDialog(
+        show = outputPanel,
+        callClose = { outputPanel = false }
+    ) {
+        MenuOutputPanel(padding, dataHelper)
     }
 
 }

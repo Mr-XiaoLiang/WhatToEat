@@ -16,4 +16,6 @@ object LocalStringsCn : LocalStrings {
     override val itemTagLabel: String = "标签"
     override val newTagLabel: String = "新增标签"
     override val nameAlreadyExists: String = "名称已经存在"
+    override val importInfoLabel: String = "请输入 JSON"
+    override val importInfoError: String = "解析结果为空"
 }

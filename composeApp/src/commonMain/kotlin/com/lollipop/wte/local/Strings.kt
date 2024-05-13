@@ -35,4 +35,8 @@ interface LocalStrings {
 
     val nameAlreadyExists: String
 
+    val importInfoLabel: String
+
+    val importInfoError: String
+
 }
