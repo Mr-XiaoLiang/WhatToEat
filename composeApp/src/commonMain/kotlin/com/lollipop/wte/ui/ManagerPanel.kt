@@ -139,15 +139,10 @@ fun ManagerPanel(
                             modifier = Modifier.fillMaxWidth().wrapContentHeight()
                         ) {
                             item.tagList.forEach {
-                                Text(
+                                Tag(
                                     text = it,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)
-                                        .background(
-                                            LColor.background,
-                                            RoundedCornerShape(6.dp)
-                                        ).padding(horizontal = 6.dp, vertical = 2.dp),
-                                    color = LColor.onBackground
-                                )
+                                    isSelect = false
+                                ) {}
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
@@ -323,31 +318,14 @@ fun ItemAddPanel(
                 ) {
                     allTagList.forEach { info ->
                         val isSelect = selectedMap.containsKey(info)
-                        Box(
-                            modifier = Modifier.wrapContentWidth()
-                                .wrapContentHeight()
-                                .padding(horizontal = 8.dp, vertical = 6.dp)
+                        Tag(
+                            text = info,
+                            isSelect = isSelect,
                         ) {
-                            Card(
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                                    .wrapContentHeight()
-                                    .combinedClickable {
-                                        if (isSelect) {
-                                            selectedMap.remove(info)
-                                        } else {
-                                            selectedMap[info] = info
-                                        }
-                                    },
-                            ) {
-                                Text(
-                                    modifier = Modifier.wrapContentWidth().wrapContentHeight()
-                                        .background(getItemBackgroundColor(isSelect))
-                                        .padding(horizontal = 8.dp, vertical = 6.dp),
-                                    text = info,
-                                    textAlign = TextAlign.Center,
-                                    color = getItemContentColor(isSelect),
-                                )
+                            if (isSelect) {
+                                selectedMap.remove(info)
+                            } else {
+                                selectedMap[info] = info
                             }
                         }
                     }
@@ -375,21 +353,5 @@ fun ItemAddPanel(
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
-    }
-}
-
-private fun getItemBackgroundColor(selected: Boolean): Color {
-    return if (selected) {
-        LColor.themeColor
-    } else {
-        LColor.background
-    }
-}
-
-private fun getItemContentColor(selected: Boolean): Color {
-    return if (selected) {
-        LColor.onThemeColor
-    } else {
-        LColor.onBackground
     }
 }

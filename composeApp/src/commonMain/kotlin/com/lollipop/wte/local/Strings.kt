@@ -39,4 +39,10 @@ interface LocalStrings {
 
     val importInfoError: String
 
+    val replace: String
+
+    val skip: String
+
+    val insert: String
+
 }

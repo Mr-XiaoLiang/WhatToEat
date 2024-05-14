@@ -18,4 +18,7 @@ object LocalStringsCn : LocalStrings {
     override val nameAlreadyExists: String = "名称已经存在"
     override val importInfoLabel: String = "请输入 JSON"
     override val importInfoError: String = "解析结果为空"
+    override val replace: String = "替换"
+    override val skip: String = "跳过"
+    override val insert: String = "添加"
 }
