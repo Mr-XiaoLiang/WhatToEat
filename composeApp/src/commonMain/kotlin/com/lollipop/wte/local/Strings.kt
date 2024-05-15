@@ -45,4 +45,8 @@ interface LocalStrings {
 
     val insert: String
 
+    val copy: String
+
+    val paste: String
+
 }

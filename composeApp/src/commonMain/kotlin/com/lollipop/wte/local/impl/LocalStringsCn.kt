@@ -21,4 +21,6 @@ object LocalStringsCn : LocalStrings {
     override val replace: String = "替换"
     override val skip: String = "跳过"
     override val insert: String = "添加"
+    override val copy: String = "复制"
+    override val paste: String = "粘贴"
 }

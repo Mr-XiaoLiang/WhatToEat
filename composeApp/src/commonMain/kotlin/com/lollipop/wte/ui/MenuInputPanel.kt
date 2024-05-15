@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,10 +27,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
@@ -38,6 +42,7 @@ import com.lollipop.wte.DataHelper
 import com.lollipop.wte.info.ItemInfo
 import com.lollipop.wte.local.Strings
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
@@ -49,7 +54,9 @@ fun MenuInputPanel(
     padding: PaddingValues,
     dataHelper: DataHelper
 ) {
-    val pendingInfoList = SnapshotStateList<ItemInfo>()
+    val clipboardManager = LocalClipboardManager.current
+    var pendingMergeInfo by remember { mutableStateOf<ItemInfo?>(null) }
+    val pendingInfoList = remember { SnapshotStateList<ItemInfo>() }
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
@@ -59,11 +66,12 @@ fun MenuInputPanel(
                 .height(maxHeight * 0.6F)
                 .background(LColor.background)
         ) {
-            var inputValue by mutableStateOf("")
-            var errorInfo by mutableStateOf("")
+            var inputValue by remember { mutableStateOf("") }
+            var errorInfo by remember { mutableStateOf("") }
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     OutlinedTextField(
                         value = inputValue,
@@ -85,78 +93,112 @@ fun MenuInputPanel(
                         modifier = Modifier.padding(horizontal = 24.dp),
                         fontSize = 10.sp
                     )
-                }
-                ExtendedFloatingActionButton(
-                    text = {
-                        Text(Strings.current.confirm)
-                    },
-                    onClick = {
-                        dataHelper.runWith {
-                            val parseResult = withContext(Dispatchers.IO) {
-                                dataHelper.parseList(inputValue)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        ExtendedFloatingActionButton(
+                            text = {
+                                Text(Strings.current.paste)
+                            },
+                            onClick = {
+                                inputValue = clipboardManager.getText()?.text ?: ""
                             }
-                            pendingInfoList.clear()
-                            pendingInfoList.addAll(parseResult)
-                            errorInfo = if (parseResult.isEmpty()) {
-                                Strings.current.importInfoError
-                            } else {
-                                ""
+                        )
+                        Spacer(Modifier.width(48.dp))
+                        ExtendedFloatingActionButton(
+                            text = {
+                                Text(Strings.current.confirm)
+                            },
+                            onClick = {
+                                dataHelper.runWith {
+                                    val parseResult = withContext(Dispatchers.IO) {
+                                        dataHelper.parseList(inputValue)
+                                    }
+                                    pendingInfoList.clear()
+                                    pendingInfoList.addAll(parseResult)
+                                    if (pendingInfoList.isNotEmpty()) {
+                                        pendingMergeInfo = pendingInfoList.removeFirst()
+                                    }
+                                    errorInfo = if (parseResult.isEmpty()) {
+                                        Strings.current.importInfoError
+                                    } else {
+                                        ""
+                                    }
+                                }
                             }
-                        }
+                        )
                     }
-                )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
         }
     }
 
     TopSheetDialog(
-        show = pendingInfoList.isNotEmpty(),
+        show = pendingMergeInfo != null,
         callClose = {
             // 不能手动关闭
         }
     ) { dialog ->
-        if (pendingInfoList.isNotEmpty()) {
-            val first = pendingInfoList.removeFirst()
-
-            BoxWithConstraints(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopCenter
+        BoxWithConstraints(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            val width = max(min(maxWidth * 0.6F, 480.dp), 260.dp)
+            Card(
+                modifier = Modifier.width(width).fillMaxHeight(0.8F),
             ) {
-                val width = max(min(maxWidth * 0.6F, 480.dp), 260.dp)
-                Card(
-                    modifier = Modifier.width(width).fillMaxHeight(0.8F),
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
+                    val first = pendingMergeInfo
+                    if (first == null) {
+                        dialog.dismiss()
+                        return@Column
+                    }
+                    Text(
+                        text = first.name,
+                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
+                            .padding(24.dp, 16.dp),
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
+                    )
 
-                        Text(
-                            text = first.name,
-                            modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                                .padding(24.dp, 16.dp),
-                            fontSize = 16.sp
-                        )
-
-                        val oldItem = dataHelper.optItem(first.name)
-                        if (oldItem == null) {
-                            ImportPanel(first.tagList.toList()) { replace ->
-                                if (replace) {
-                                    dataHelper.putInfo(first)
-                                }
-                                dialog.dismiss()
+                    val oldItem = dataHelper.optItem(first.name)
+                    if (oldItem == null) {
+                        ImportPanel(first.tagList.toList()) { replace ->
+                            if (replace) {
+                                dataHelper.putInfo(first)
                             }
-                        } else {
-                            ReplacePanel(
-                                first.tagList.toList(),
-                                oldItem.tagList.toList()
-                            ) { replace ->
-                                if (replace) {
-                                    dataHelper.putInfo(first)
+                            dialog.dismiss()
+                            pendingMergeInfo = null
+                            dataHelper.runWith {
+                                delay(300)
+                                if (pendingInfoList.isNotEmpty()) {
+                                    pendingMergeInfo = pendingInfoList.removeFirst()
                                 }
-                                dialog.dismiss()
                             }
                         }
-
+                    } else {
+                        ReplacePanel(
+                            first.tagList.toList(),
+                            oldItem.tagList.toList()
+                        ) { replace ->
+                            if (replace) {
+                                dataHelper.putInfo(first)
+                            }
+                            dialog.dismiss()
+                            pendingMergeInfo = null
+                            dataHelper.runWith {
+                                delay(300)
+                                if (pendingInfoList.isNotEmpty()) {
+                                    pendingMergeInfo = pendingInfoList.removeFirst()
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -183,12 +225,12 @@ private fun ReplacePanel(
                 modifier = Modifier.padding(
                     start = 24.dp, top = 12.dp, end = 12.dp, bottom = 12.dp
                 ).background(LColor.background, RoundedCornerShape(12.dp))
-                    .weight(1F).padding(6.dp)
+                    .weight(1F).fillMaxHeight().padding(6.dp)
             ) {
                 oldTags.forEach {
                     Tag(
                         text = it,
-                        isSelect = false
+                        isSelect = true
                     ) {}
                 }
             }
@@ -201,12 +243,12 @@ private fun ReplacePanel(
                 modifier = Modifier.padding(
                     start = 24.dp, top = 12.dp, end = 12.dp, bottom = 12.dp
                 ).background(LColor.background, RoundedCornerShape(12.dp))
-                    .weight(1F).padding(6.dp)
+                    .weight(1F).fillMaxHeight().padding(6.dp)
             ) {
                 newTags.forEach {
                     Tag(
                         text = it,
-                        isSelect = false
+                        isSelect = true
                     ) {}
                 }
             }
@@ -222,9 +264,10 @@ private fun ReplacePanel(
             ) {
                 Text(Strings.current.skip)
             }
+            Spacer(Modifier.width(48.dp))
             OutlinedButton(
                 onClick = {
-                    resultCallback(false)
+                    resultCallback(true)
                 },
             ) {
                 Text(Strings.current.replace)
@@ -251,7 +294,7 @@ private fun ImportPanel(
             newTags.forEach {
                 Tag(
                     text = it,
-                    isSelect = false
+                    isSelect = true
                 ) {}
             }
         }
@@ -266,12 +309,13 @@ private fun ImportPanel(
             ) {
                 Text(Strings.current.skip)
             }
+            Spacer(Modifier.width(48.dp))
             OutlinedButton(
                 onClick = {
-                    resultCallback(false)
+                    resultCallback(true)
                 },
             ) {
-                Text(Strings.current.replace)
+                Text(Strings.current.insert)
             }
         }
     }
