@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Checkbox
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedButton
@@ -57,6 +58,8 @@ fun MenuInputPanel(
     val clipboardManager = LocalClipboardManager.current
     var pendingMergeInfo by remember { mutableStateOf<ItemInfo?>(null) }
     val pendingInfoList = remember { SnapshotStateList<ItemInfo>() }
+    var skipMerge by remember { mutableStateOf(false) }
+    var skipInsert by remember { mutableStateOf(false) }
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
@@ -69,6 +72,7 @@ fun MenuInputPanel(
             var inputValue by remember { mutableStateOf("") }
             var errorInfo by remember { mutableStateOf("") }
             Box(modifier = Modifier.fillMaxSize()) {
+
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -95,8 +99,25 @@ fun MenuInputPanel(
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Spacer(Modifier.width(48.dp))
+                        Checkbox(
+                            checked = skipMerge,
+                            onCheckedChange = {
+                                skipMerge = it
+                            }
+                        )
+                        Text(text = Strings.current.skipMerge, color = LColor.onBackground)
+                        Spacer(Modifier.width(48.dp))
+                        Checkbox(
+                            checked = skipInsert,
+                            onCheckedChange = {
+                                skipInsert = it
+                            }
+                        )
+                        Text(text = Strings.current.skipInsert, color = LColor.onBackground)
+                        Spacer(Modifier.weight(1F))
                         ExtendedFloatingActionButton(
                             text = {
                                 Text(Strings.current.paste)
@@ -117,8 +138,13 @@ fun MenuInputPanel(
                                     }
                                     pendingInfoList.clear()
                                     pendingInfoList.addAll(parseResult)
-                                    if (pendingInfoList.isNotEmpty()) {
-                                        pendingMergeInfo = pendingInfoList.removeFirst()
+                                    findNextInfo(
+                                        dataHelper,
+                                        pendingInfoList,
+                                        skipMerge,
+                                        skipInsert
+                                    ) {
+                                        pendingMergeInfo = it
                                     }
                                     errorInfo = if (parseResult.isEmpty()) {
                                         Strings.current.importInfoError
@@ -128,8 +154,8 @@ fun MenuInputPanel(
                                 }
                             }
                         )
+                        Spacer(modifier = Modifier.width(24.dp))
                     }
-
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
@@ -175,11 +201,8 @@ fun MenuInputPanel(
                             }
                             dialog.dismiss()
                             pendingMergeInfo = null
-                            dataHelper.runWith {
-                                delay(300)
-                                if (pendingInfoList.isNotEmpty()) {
-                                    pendingMergeInfo = pendingInfoList.removeFirst()
-                                }
+                            findNextInfo(dataHelper, pendingInfoList, skipMerge, skipInsert) {
+                                pendingMergeInfo = it
                             }
                         }
                     } else {
@@ -192,11 +215,8 @@ fun MenuInputPanel(
                             }
                             dialog.dismiss()
                             pendingMergeInfo = null
-                            dataHelper.runWith {
-                                delay(300)
-                                if (pendingInfoList.isNotEmpty()) {
-                                    pendingMergeInfo = pendingInfoList.removeFirst()
-                                }
+                            findNextInfo(dataHelper, pendingInfoList, skipMerge, skipInsert) {
+                                pendingMergeInfo = it
                             }
                         }
                     }
@@ -204,7 +224,48 @@ fun MenuInputPanel(
             }
         }
     }
+}
 
+private fun findNextInfo(
+    dataHelper: DataHelper,
+    pendingInfoList: MutableList<ItemInfo>,
+    skipMerge: Boolean,
+    skipInsert: Boolean,
+    callback: (ItemInfo?) -> Unit
+) {
+    dataHelper.runWith {
+        delay(300)
+        val info = withContext(Dispatchers.IO) {
+            findNextInfoSync(dataHelper, pendingInfoList, skipMerge, skipInsert)
+        }
+        callback(info)
+    }
+}
+
+private fun findNextInfoSync(
+    dataHelper: DataHelper,
+    pendingInfoList: MutableList<ItemInfo>,
+    skipMerge: Boolean,
+    skipInsert: Boolean,
+): ItemInfo? {
+    while (pendingInfoList.isNotEmpty()) {
+        val first = pendingInfoList.removeFirst()
+        val oldItem = dataHelper.optItem(first.name)
+        if (oldItem != null) {
+            if (skipMerge) {
+                dataHelper.putInfo(first)
+            } else {
+                return first
+            }
+        } else {
+            if (skipInsert) {
+                dataHelper.putInfo(first)
+            } else {
+                return first
+            }
+        }
+    }
+    return null
 }
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)

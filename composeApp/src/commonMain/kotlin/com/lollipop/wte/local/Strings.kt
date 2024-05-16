@@ -49,4 +49,8 @@ interface LocalStrings {
 
     val paste: String
 
+    val skipMerge: String
+
+    val skipInsert: String
+
 }
