@@ -30,19 +30,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.lollipop.navigator.PageScope
 import com.lollipop.wte.Config
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.local.Strings
 
 @Composable
-fun ContentPage(padding: PaddingValues, dataHelper: DataHelper) {
-
+fun PageScope.ContentPage() {
+    val dataHelper = DataHelper
     var showTagDialog by remember { mutableStateOf(false) }
     var showTagFilter by remember { mutableStateOf(false) }
     val selectorList = remember { dataHelper.selectTagList }
-
+    val scope = this
     var showManagerPanel by remember { mutableStateOf(false) }
-
+    val padding = scope.padding
     MaterialTheme {
         ContentScaffold(
             padding,

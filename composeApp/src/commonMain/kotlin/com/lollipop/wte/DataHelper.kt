@@ -16,25 +16,21 @@ import kotlinx.coroutines.launch
 import loggerOf
 import java.io.File
 
-class DataHelper(
-    private val scope: CoroutineScope,
-) {
+object DataHelper {
 
-    companion object {
+    const val RES_MENU = "files/menu.wte"
 
-        const val RES_MENU = "files/menu.wte"
+    const val FILE_MENU = "menu.wte"
 
-        const val FILE_MENU = "menu.wte"
+    const val KEY_NAME = "name"
 
-        const val KEY_NAME = "name"
+    const val KEY_TAG = "tag"
 
-        const val KEY_TAG = "tag"
-
-        fun getMenuFile(): File {
-            return File(Platform.fileDir, FILE_MENU)
-        }
-
+    fun getMenuFile(): File {
+        return File(Platform.fileDir, FILE_MENU)
     }
+
+    var coroutineScope: CoroutineScope? = null
 
     private val log = loggerOf()
 
@@ -140,7 +136,7 @@ class DataHelper(
     }
 
     private fun launch(callback: suspend CoroutineScope.() -> Unit) {
-        scope.launch(block = callback)
+        coroutineScope?.launch(block = callback)
     }
 
     fun putTag(tag: String) {

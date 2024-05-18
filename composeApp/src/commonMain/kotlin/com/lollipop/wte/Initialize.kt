@@ -1,13 +1,15 @@
 package com.lollipop.wte
 
 import com.lollipop.wte.initialize.InitLanguage
+import com.lollipop.wte.initialize.InitPageRouter
 
 object Initialize {
 
     private var isInit = false
 
-    private val initTask = arrayOf<InitTask>(
-        InitLanguage
+    private val initTask = arrayOf(
+        InitLanguage,
+        InitPageRouter
     )
 
     fun init(firstCallback: () -> Unit) {

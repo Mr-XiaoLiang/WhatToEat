@@ -4,7 +4,8 @@ import kotlin.reflect.KProperty
 
 open class IntentInfo {
 
-    private var data: MutableMap<String, Any> = hashMapOf()
+    var data: MutableMap<String, Any> = hashMapOf()
+        private set
 
     fun update(input: MutableMap<String, Any>) {
         data = input
