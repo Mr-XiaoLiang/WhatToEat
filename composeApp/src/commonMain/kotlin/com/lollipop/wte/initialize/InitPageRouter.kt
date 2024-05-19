@@ -9,7 +9,7 @@ object InitPageRouter : Initialize.InitTask {
     override fun run() {
         Navigator.init {
             Navigator.register(Router.Main)
-
+            Navigator.register(Router.Manager)
         }
     }
 

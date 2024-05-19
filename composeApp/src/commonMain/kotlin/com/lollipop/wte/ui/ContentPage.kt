@@ -34,6 +34,7 @@ import com.lollipop.navigator.PageScope
 import com.lollipop.wte.Config
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.local.Strings
+import com.lollipop.wte.router.Router
 
 @Composable
 fun PageScope.ContentPage() {
@@ -42,7 +43,7 @@ fun PageScope.ContentPage() {
     var showTagFilter by remember { mutableStateOf(false) }
     val selectorList = remember { dataHelper.selectTagList }
     val scope = this
-    var showManagerPanel by remember { mutableStateOf(false) }
+//    var showManagerPanel by remember { mutableStateOf(false) }
     val padding = scope.padding
     MaterialTheme {
         ContentScaffold(
@@ -55,7 +56,8 @@ fun PageScope.ContentPage() {
                     ) {
                         IconButton(
                             onClick = {
-                                showManagerPanel = true
+//                                showManagerPanel = true
+                                Router.Manager.go()
                             },
                             modifier = Modifier.width(48.dp).height(48.dp).padding(12.dp)
                         ) {
@@ -101,12 +103,12 @@ fun PageScope.ContentPage() {
             }
         }
 
-        TopSheetDialog(
-            show = showManagerPanel,
-            callClose = { showManagerPanel = false }
-        ) {
-            ManagerPanel(padding, dataHelper)
-        }
+//        TopSheetDialog(
+//            show = showManagerPanel,
+//            callClose = { showManagerPanel = false }
+//        ) {
+//            ManagerPanel(padding, dataHelper)
+//        }
 
 //        var showContent by remember { mutableStateOf(false) }
 //

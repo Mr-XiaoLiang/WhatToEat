@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
@@ -43,28 +42,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
+import com.lollipop.navigator.Navigator
+import com.lollipop.navigator.PageScope
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.info.ItemInfo
 import com.lollipop.wte.local.Strings
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import whattoeat.composeapp.generated.resources.Res
+import whattoeat.composeapp.generated.resources.arrow_back_24dp
 import whattoeat.composeapp.generated.resources.download_24dp
 import whattoeat.composeapp.generated.resources.upload_24dp
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
 @Composable
-fun ManagerPanel(
-    padding: PaddingValues,
-    dataHelper: DataHelper
-) {
-
+fun PageScope.ManagerPanel() {
+    val dataHelper = DataHelper
     val nameValue = remember { mutableStateOf("") }
     val selectedMap = remember { SnapshotStateMap<String, String>() }
 
@@ -75,18 +72,26 @@ fun ManagerPanel(
     var inputPanel by remember { mutableStateOf(false) }
     var outputPanel by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8F).background(LColor.background)
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.End
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.End
+        Card(
+            modifier = Modifier.fillMaxWidth().wrapContentHeight()
         ) {
-
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                modifier = Modifier.fillMaxWidth()
             ) {
+                if (Navigator.canBack) {
+                    IconButton(
+                        onClick = {
+                            back()
+                        }
+                    ) {
+                        Icon(painterResource(Res.drawable.arrow_back_24dp), "")
+                    }
+                }
+                Spacer(modifier = Modifier.weight(1F))
                 IconButton(
                     onClick = {
                         inputPanel = true
@@ -109,48 +114,14 @@ fun ManagerPanel(
                     Icon(Icons.Filled.Add, "")
                 }
             }
+        }
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(itemList) { item ->
-                    Column(
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                            .padding(horizontal = 12.dp, vertical = 8.dp)
-                            .background(LColor.content, RoundedCornerShape(CornerSize(6.dp)))
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    pendingRemoveItem = item
-                                },
-                                modifier = Modifier.width(24.dp).height(24.dp).padding(4.dp)
-                            ) {
-                                Icon(Icons.Filled.Delete, null, tint = LColor.accentColor)
-                            }
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(item.name, color = LColor.onContent)
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                        ) {
-                            item.tagList.forEach {
-                                Tag(
-                                    text = it,
-                                    isSelect = false
-                                ) {}
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Box(
-                            modifier = Modifier.fillMaxWidth(0.9F).height(1.dp)
-                                .background(LColor.background)
-                        )
-                    }
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(itemList) { item ->
+                ItemCard(item) {
+                    pendingRemoveItem = item
                 }
             }
         }
@@ -182,6 +153,46 @@ fun ManagerPanel(
         MenuOutputPanel(padding, dataHelper)
     }
 
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun ItemCard(item: ItemInfo, onRemoveClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().wrapContentHeight()
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .background(LColor.content, RoundedCornerShape(CornerSize(6.dp))),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1F).wrapContentHeight()) {
+            Text(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                text = item.name, color = LColor.onContent
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            FlowRow(
+                modifier = Modifier.fillMaxWidth().wrapContentHeight()
+            ) {
+                item.tagList.forEach {
+                    Tag(
+                        text = it,
+                        isSelect = false
+                    ) {}
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier.fillMaxWidth().height(1.dp)
+                    .background(LColor.background)
+            )
+        }
+        IconButton(
+            onClick = onRemoveClick,
+            modifier = Modifier.width(48.dp).height(48.dp).padding(12.dp)
+        ) {
+            Icon(Icons.Filled.Delete, null, tint = LColor.accentColor)
+        }
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)

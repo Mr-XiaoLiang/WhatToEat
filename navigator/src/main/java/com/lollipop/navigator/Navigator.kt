@@ -1,7 +1,10 @@
 package com.lollipop.navigator
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import java.util.LinkedList
 
 object Navigator {
@@ -10,9 +13,14 @@ object Navigator {
 
     private val pageStack = LinkedList<PageScope>()
 
-    var currentPage = mutableStateOf<PageScope?>(null)
+    val currentPage = mutableStateOf<PageScope?>(null)
 
     private var isInit = false
+
+    val canBack: Boolean
+        get() {
+            return pageStack.size > 1
+        }
 
     fun init(block: () -> Unit) {
         if (isInit) {
@@ -105,6 +113,15 @@ object Navigator {
         // 动画先不写
     }
 
+}
+
+@Composable
+fun NavigatorRoot(padding: PaddingValues) {
+    val currentPage by remember { Navigator.currentPage }
+    currentPage?.let {
+        it.padding = padding
+        it.compose()
+    }
 }
 
 fun Navigate(

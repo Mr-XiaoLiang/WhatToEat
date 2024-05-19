@@ -27,7 +27,7 @@ class PageScope(
         info.content(this)
     }
 
-    fun finish() {
+    fun back() {
         Navigator.back(info.path)
     }
 
