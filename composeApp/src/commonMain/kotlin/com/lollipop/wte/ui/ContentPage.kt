@@ -43,7 +43,6 @@ fun PageScope.ContentPage() {
     var showTagFilter by remember { mutableStateOf(false) }
     val selectorList = remember { dataHelper.selectTagList }
     val scope = this
-//    var showManagerPanel by remember { mutableStateOf(false) }
     val padding = scope.padding
     MaterialTheme {
         ContentScaffold(
@@ -56,7 +55,6 @@ fun PageScope.ContentPage() {
                     ) {
                         IconButton(
                             onClick = {
-//                                showManagerPanel = true
                                 Router.Manager.go()
                             },
                             modifier = Modifier.width(48.dp).height(48.dp).padding(12.dp)
@@ -102,13 +100,6 @@ fun PageScope.ContentPage() {
                 FlagPanel(padding, false, dataHelper) {}
             }
         }
-
-//        TopSheetDialog(
-//            show = showManagerPanel,
-//            callClose = { showManagerPanel = false }
-//        ) {
-//            ManagerPanel(padding, dataHelper)
-//        }
 
 //        var showContent by remember { mutableStateOf(false) }
 //

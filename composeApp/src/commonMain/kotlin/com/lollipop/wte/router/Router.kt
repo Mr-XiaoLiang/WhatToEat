@@ -7,6 +7,7 @@ import com.lollipop.navigator.PageInfo
 import com.lollipop.navigator.PageMode
 import com.lollipop.navigator.PageScope
 import com.lollipop.wte.ui.ContentPage
+import com.lollipop.wte.ui.ItemAddPanel
 import com.lollipop.wte.ui.ManagerPanel
 
 sealed class Router<T : IntentInfo> : PageInfo {
@@ -46,6 +47,22 @@ sealed class Router<T : IntentInfo> : PageInfo {
 
         override val content: @Composable PageScope.() -> Unit
             get() = { ManagerPanel() }
+
+    }
+
+    data object ItemAdd : Router<ItemAdd.Intent>() {
+        class Intent : IntentInfo() {
+
+            var nameValue by self("")
+
+        }
+
+        override fun go(argumentBuild: Intent.() -> Unit) {
+            goWith<Intent>(argumentBuild)
+        }
+
+        override val content: @Composable PageScope.() -> Unit
+            get() = { ItemAddPanel() }
 
     }
 

@@ -10,6 +10,7 @@ object InitPageRouter : Initialize.InitTask {
         Navigator.init {
             Navigator.register(Router.Main)
             Navigator.register(Router.Manager)
+            Navigator.register(Router.ItemAdd)
         }
     }
 
