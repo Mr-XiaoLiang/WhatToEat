@@ -56,21 +56,18 @@ fun PageScope.ManagerPanel() {
     val itemList = remember { dataHelper.dataList }
     var pendingRemoveItem by remember { mutableStateOf(ItemInfo.EMPTY) }
 
-    var inputPanel by remember { mutableStateOf(false) }
-    var outputPanel by remember { mutableStateOf(false) }
-
     ActionBarGroup(
         actionButtons = {
             IconButton(
                 onClick = {
-                    inputPanel = true
+                    Router.MenuInput.go()
                 }
             ) {
                 Icon(painterResource(Res.drawable.download_24dp), "")
             }
             IconButton(
                 onClick = {
-                    outputPanel = true
+                    Router.MenuOutput.go()
                 }
             ) {
                 Icon(painterResource(Res.drawable.upload_24dp), "")
@@ -103,20 +100,6 @@ fun PageScope.ManagerPanel() {
             pendingRemoveItem = ItemInfo.EMPTY
         }) {
         ItemRemovePanel(padding, dataHelper, pendingRemoveItem, it)
-    }
-
-    TopSheetDialog(
-        show = inputPanel,
-        callClose = { inputPanel = false }
-    ) {
-        MenuInputPanel(padding, dataHelper)
-    }
-
-    TopSheetDialog(
-        show = outputPanel,
-        callClose = { outputPanel = false }
-    ) {
-        MenuOutputPanel(padding, dataHelper)
     }
 
 }
@@ -215,11 +198,9 @@ fun ItemRemovePanel(
                                 dialog.dismiss()
                             }
                             .padding(horizontal = 16.dp, vertical = 8.dp)
-
                     )
                 }
             }
-
         }
     }
 }

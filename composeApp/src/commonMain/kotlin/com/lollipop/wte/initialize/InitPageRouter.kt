@@ -11,6 +11,8 @@ object InitPageRouter : Initialize.InitTask {
             Navigator.register(Router.Main)
             Navigator.register(Router.Manager)
             Navigator.register(Router.ItemAdd)
+            Navigator.register(Router.MenuInput)
+            Navigator.register(Router.MenuOutput)
         }
     }
 

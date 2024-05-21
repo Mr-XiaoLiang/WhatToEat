@@ -6,9 +6,12 @@ import com.lollipop.navigator.Navigator
 import com.lollipop.navigator.PageInfo
 import com.lollipop.navigator.PageMode
 import com.lollipop.navigator.PageScope
+import com.lollipop.wte.router.Router.ItemAdd.Intent
 import com.lollipop.wte.ui.ContentPage
 import com.lollipop.wte.ui.ItemAddPanel
 import com.lollipop.wte.ui.ManagerPanel
+import com.lollipop.wte.ui.MenuInputPanel
+import com.lollipop.wte.ui.MenuOutputPanel
 
 sealed class Router<T : IntentInfo> : PageInfo {
 
@@ -64,6 +67,28 @@ sealed class Router<T : IntentInfo> : PageInfo {
         override val content: @Composable PageScope.() -> Unit
             get() = { ItemAddPanel() }
 
+    }
+
+    data object MenuInput : Router<MenuInput.Intent>() {
+        class Intent : IntentInfo()
+
+        override fun go(argumentBuild: Intent.() -> Unit) {
+            goWith<Intent>(argumentBuild)
+        }
+
+        override val content: @Composable PageScope.() -> Unit
+            get() = { MenuInputPanel() }
+    }
+
+    data object MenuOutput : Router<MenuOutput.Intent>() {
+        class Intent : IntentInfo()
+
+        override fun go(argumentBuild: Intent.() -> Unit) {
+            goWith<Intent>(argumentBuild)
+        }
+
+        override val content: @Composable PageScope.() -> Unit
+            get() = { MenuOutputPanel() }
     }
 
 }

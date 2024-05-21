@@ -2,12 +2,10 @@ package com.lollipop.wte.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -39,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
+import com.lollipop.navigator.PageScope
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.info.ItemInfo
 import com.lollipop.wte.local.Strings
@@ -51,114 +50,104 @@ import whattoeat.composeapp.generated.resources.Res
 import whattoeat.composeapp.generated.resources.double_arrow_24dp
 
 @Composable
-fun MenuInputPanel(
-    padding: PaddingValues,
-    dataHelper: DataHelper
-) {
+fun PageScope.MenuInputPanel() {
+    val dataHelper = DataHelper
     val clipboardManager = LocalClipboardManager.current
     var pendingMergeInfo by remember { mutableStateOf<ItemInfo?>(null) }
     val pendingInfoList = remember { SnapshotStateList<ItemInfo>() }
+
     var skipMerge by remember { mutableStateOf(false) }
     var skipInsert by remember { mutableStateOf(false) }
-    BoxWithConstraints(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        Card(
-            modifier = Modifier.fillMaxWidth()
-                .height(maxHeight * 0.6F)
-                .background(LColor.background)
-        ) {
-            var inputValue by remember { mutableStateOf("") }
-            var errorInfo by remember { mutableStateOf("") }
-            Box(modifier = Modifier.fillMaxSize()) {
 
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    OutlinedTextField(
-                        value = inputValue,
-                        isError = errorInfo.isEmpty(),
-                        onValueChange = {
-                            inputValue = it
-                            errorInfo = ""
-                            pendingInfoList.clear()
-                        },
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                            .fillMaxWidth().weight(1F),
-                        label = {
-                            Text(Strings.current.importInfoLabel)
-                        }
-                    )
-                    Text(
-                        text = errorInfo,
-                        color = LColor.accentColor,
-                        modifier = Modifier.padding(horizontal = 24.dp),
-                        fontSize = 10.sp
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Spacer(Modifier.width(48.dp))
-                        Checkbox(
-                            checked = skipMerge,
-                            onCheckedChange = {
-                                skipMerge = it
-                            }
-                        )
-                        Text(text = Strings.current.skipMerge, color = LColor.onBackground)
-                        Spacer(Modifier.width(48.dp))
-                        Checkbox(
-                            checked = skipInsert,
-                            onCheckedChange = {
-                                skipInsert = it
-                            }
-                        )
-                        Text(text = Strings.current.skipInsert, color = LColor.onBackground)
-                        Spacer(Modifier.weight(1F))
-                        ExtendedFloatingActionButton(
-                            text = {
-                                Text(Strings.current.paste)
-                            },
-                            onClick = {
-                                inputValue = clipboardManager.getText()?.text ?: ""
-                            }
-                        )
-                        Spacer(Modifier.width(48.dp))
-                        ExtendedFloatingActionButton(
-                            text = {
-                                Text(Strings.current.confirm)
-                            },
-                            onClick = {
-                                dataHelper.runWith {
-                                    val parseResult = withContext(Dispatchers.IO) {
-                                        dataHelper.parseList(inputValue)
-                                    }
-                                    pendingInfoList.clear()
-                                    pendingInfoList.addAll(parseResult)
-                                    findNextInfo(
-                                        dataHelper,
-                                        pendingInfoList,
-                                        skipMerge,
-                                        skipInsert
-                                    ) {
-                                        pendingMergeInfo = it
-                                    }
-                                    errorInfo = if (parseResult.isEmpty()) {
-                                        Strings.current.importInfoError
-                                    } else {
-                                        ""
-                                    }
-                                }
-                            }
-                        )
-                        Spacer(modifier = Modifier.width(24.dp))
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
+    var inputValue by remember { mutableStateOf("") }
+    var errorInfo by remember { mutableStateOf("") }
+    ActionBarGroup(
+        actionButtons = {}
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedTextField(
+                value = inputValue,
+                isError = errorInfo.isEmpty(),
+                onValueChange = {
+                    inputValue = it
+                    errorInfo = ""
+                    pendingInfoList.clear()
+                },
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxWidth().weight(1F),
+                label = {
+                    Text(Strings.current.importInfoLabel)
                 }
+            )
+            Text(
+                text = errorInfo,
+                color = LColor.accentColor,
+                modifier = Modifier.padding(horizontal = 24.dp),
+                fontSize = 10.sp
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(Modifier.width(48.dp))
+                Checkbox(
+                    checked = skipMerge,
+                    onCheckedChange = {
+                        skipMerge = it
+                    }
+                )
+                Text(text = Strings.current.skipMerge, color = LColor.onBackground)
+                Spacer(Modifier.width(48.dp))
+                Checkbox(
+                    checked = skipInsert,
+                    onCheckedChange = {
+                        skipInsert = it
+                    }
+                )
+                Text(text = Strings.current.skipInsert, color = LColor.onBackground)
+                Spacer(Modifier.weight(1F))
+                ExtendedFloatingActionButton(
+                    text = {
+                        Text(Strings.current.paste)
+                    },
+                    onClick = {
+                        inputValue = clipboardManager.getText()?.text ?: ""
+                    }
+                )
+                Spacer(Modifier.width(48.dp))
+                ExtendedFloatingActionButton(
+                    text = {
+                        Text(Strings.current.confirm)
+                    },
+                    onClick = {
+                        dataHelper.runWith {
+                            val parseResult = withContext(Dispatchers.IO) {
+                                dataHelper.parseList(inputValue)
+                            }
+                            pendingInfoList.clear()
+                            pendingInfoList.addAll(parseResult)
+                            findNextInfo(
+                                dataHelper,
+                                pendingInfoList,
+                                skipMerge,
+                                skipInsert
+                            ) {
+                                pendingMergeInfo = it
+                            }
+                            errorInfo = if (parseResult.isEmpty()) {
+                                Strings.current.importInfoError
+                            } else {
+                                ""
+                            }
+                        }
+                    }
+                )
+                Spacer(modifier = Modifier.width(24.dp))
             }
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 
