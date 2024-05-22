@@ -1,10 +1,20 @@
 package com.lollipop.navigator
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.IntOffset
 import java.util.LinkedList
 
 object Navigator {
@@ -20,6 +30,8 @@ object Navigator {
     val destroyPage = mutableStateOf<PageScope?>(null)
 
     private var isInit = false
+
+    var pageBackground: () -> Color = { Color.White }
 
     val canBack: Boolean
         get() {
@@ -86,8 +98,11 @@ object Navigator {
         routerMap[path] ?: return
         val last = optLastPage() ?: return
         if (last.info.path == path) {
+            last.isShown.value = false
+            destroyPage.value = last
             pageStack.removeLast()
             currentPage.value = optLastPage()
+            baseLayer.value = optPreviousPage()
         }
     }
 
@@ -97,11 +112,14 @@ object Navigator {
         if (indexOfLast < 0) {
             return
         }
+        destroyPage.value = optLastPage()
+        destroyPage.value?.isShown?.value = false
         val stackSize = indexOfLast + 1
         while (pageStack.size > stackSize) {
             pageStack.removeLast()
         }
         currentPage.value = optLastPage()
+        baseLayer.value = optPreviousPage()
     }
 
     private fun optLastPage(): PageScope? {
@@ -123,6 +141,7 @@ object Navigator {
         pageScope.isShown.value = true
         pageStack.addLast(pageScope)
         currentPage.value = pageScope
+        destroyPage.value = null
     }
 
 }
@@ -131,13 +150,45 @@ object Navigator {
 fun NavigatorRoot(padding: PaddingValues) {
     val currentPage by remember { Navigator.currentPage }
     val baseLayer by remember { Navigator.baseLayer }
+    val destroyLayer by remember { Navigator.destroyPage }
     baseLayer?.let {
         it.padding = padding
-        it.compose()
+        it.NavigatorAnimatedVisibility(it.isShown) {
+            it.compose()
+        }
     }
     currentPage?.let {
         it.padding = padding
-        it.compose()
+        it.NavigatorAnimatedVisibility(it.isShown) {
+            it.compose()
+        }
+    }
+    destroyLayer?.let {
+        it.padding = padding
+        it.NavigatorAnimatedVisibility(it.isShown) {
+            it.compose()
+        }
+    }
+}
+
+@Composable
+private fun PageScope.NavigatorAnimatedVisibility(
+    showState: MutableState<Boolean>,
+    content: @Composable PageScope.() -> Unit
+) {
+    val isShow by remember { showState }
+    AnimatedVisibility(
+        visible = isShow,
+        enter = slideIn {
+            IntOffset(-it.width, 0)
+        },
+        exit = slideOut {
+            IntOffset(-it.width, 0)
+        }
+    ) {
+        Box(modifier = Modifier.fillMaxSize().background(Navigator.pageBackground())) {
+            content()
+        }
     }
 }
 
