@@ -2,6 +2,7 @@ package com.lollipop.navigator
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 
 class PageScope(
@@ -9,6 +10,8 @@ class PageScope(
 ) {
 
     val intent = HashMap<String, Any>()
+
+    val isShown = mutableStateOf(false)
 
     var padding = PaddingValues(0.dp)
 

@@ -13,7 +13,11 @@ object Navigator {
 
     private val pageStack = LinkedList<PageScope>()
 
+    val baseLayer = mutableStateOf<PageScope?>(null)
+
     val currentPage = mutableStateOf<PageScope?>(null)
+
+    val destroyPage = mutableStateOf<PageScope?>(null)
 
     private var isInit = false
 
@@ -69,12 +73,13 @@ object Navigator {
 
     fun finish(scope: PageScope) {
         val lastPage = optLastPage()
+        pageStack.remove(scope)
         if (lastPage === scope) {
-            pageStack.removeLast()
-            currentPage.value = optLastPage()
-        } else {
-            pageStack.remove(scope)
+            destroyPage.value = scope
         }
+        scope.isShown.value = false
+        currentPage.value = optLastPage()
+        baseLayer.value = optPreviousPage()
     }
 
     fun back(path: String) {
@@ -106,11 +111,18 @@ object Navigator {
         return null
     }
 
+    private fun optPreviousPage(): PageScope? {
+        if (pageStack.size > 1) {
+            return pageStack[pageStack.size - 2]
+        }
+        return null
+    }
+
     private fun pushPage(pageScope: PageScope) {
-//        val last = optLastPage()
+        baseLayer.value = currentPage.value
+        pageScope.isShown.value = true
         pageStack.addLast(pageScope)
         currentPage.value = pageScope
-        // 动画先不写
     }
 
 }
@@ -118,6 +130,11 @@ object Navigator {
 @Composable
 fun NavigatorRoot(padding: PaddingValues) {
     val currentPage by remember { Navigator.currentPage }
+    val baseLayer by remember { Navigator.baseLayer }
+    baseLayer?.let {
+        it.padding = padding
+        it.compose()
+    }
     currentPage?.let {
         it.padding = padding
         it.compose()
