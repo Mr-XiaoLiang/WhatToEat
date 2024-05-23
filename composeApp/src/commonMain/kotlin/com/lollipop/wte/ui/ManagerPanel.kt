@@ -49,7 +49,7 @@ import whattoeat.composeapp.generated.resources.Res
 import whattoeat.composeapp.generated.resources.download_24dp
 import whattoeat.composeapp.generated.resources.upload_24dp
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun PageScope.ManagerPanel() {
     val dataHelper = DataHelper
