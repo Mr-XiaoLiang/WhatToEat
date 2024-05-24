@@ -10,6 +10,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import com.lollipop.navigator.Navigator
 import com.lollipop.navigator.PageScope
@@ -25,7 +26,6 @@ fun PageScope.ActionBarGroup(
     actionButtons: @Composable PageScope.() -> Unit,
     content: @Composable PageScope.() -> Unit,
 ) {
-
     Column(
         modifier = modifier,
     ) {

@@ -5,14 +5,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.LinkedList
 
 object Navigator {
 
     private val routerMap = HashMap<String, PageInfo>()
 
-    private val pageStack = LinkedList<PageScope>()
+    val pageStack = LinkedList<PageScope>()
 
     val baseLayer = mutableStateOf<PageScope?>(null)
 
@@ -23,6 +29,8 @@ object Navigator {
     private var isInit = false
 
     var pageBackground: () -> Color = { Color.White }
+
+    internal var coroutineScope: CoroutineScope? = null
 
     val canBack: Boolean
         get() {
@@ -80,9 +88,9 @@ object Navigator {
         if (lastPage === scope) {
             destroyPage.value = scope
         }
-        scope.isShown.value = false
         currentPage.value = optLastPage()
         baseLayer.value = optPreviousPage()
+        scope.changeShownState(false)
     }
 
     fun back(path: String) {
@@ -96,11 +104,11 @@ object Navigator {
         routerMap[path] ?: return
         val last = optLastPage() ?: return
         if (last.info.path == path) {
-            last.isShown.value = false
             destroyPage.value = last
             pageStack.removeLast()
             currentPage.value = optLastPage()
             baseLayer.value = optPreviousPage()
+            last.changeShownState(false)
         }
     }
 
@@ -111,13 +119,14 @@ object Navigator {
             return
         }
         destroyPage.value = optLastPage()
-        destroyPage.value?.isShown?.value = false
+
         val stackSize = indexOfLast + 1
         while (pageStack.size > stackSize) {
             pageStack.removeLast()
         }
         currentPage.value = optLastPage()
         baseLayer.value = optPreviousPage()
+        destroyPage.value?.changeShownState(false)
     }
 
     private fun optLastPage(): PageScope? {
@@ -136,33 +145,51 @@ object Navigator {
 
     private fun pushPage(pageScope: PageScope) {
         baseLayer.value = currentPage.value
-        pageScope.isShown.value = true
         pageStack.addLast(pageScope)
         currentPage.value = pageScope
         destroyPage.value = null
+        pageScope.changeShownState(true)
+    }
+
+    private fun post(runnable: suspend () -> Unit) {
+        coroutineScope?.launch {
+            runnable()
+        }
     }
 
 }
 
 @Composable
 fun NavigatorRoot(padding: PaddingValues) {
+    val coroutineScope = rememberCoroutineScope()
+    Navigator.coroutineScope = coroutineScope
     val currentPage by remember { Navigator.currentPage }
-//    val baseLayer by remember { Navigator.baseLayer }
-//    val destroyLayer by remember { Navigator.destroyPage }
-//    baseLayer?.let {
-//        it.padding = padding
-//        it.compose()
-//    }
+    val baseLayer by remember { Navigator.baseLayer }
+    val destroyLayer by remember { Navigator.destroyPage }
+    baseLayer?.let {
+        it.padding = padding
+        var isShow by remember { mutableStateOf(it.getShownState()) }
+        it.Compose(isShow) {
+            isShow = it.getShownState()
+        }
+    }
     currentPage?.let {
         it.padding = padding
-        it.compose()
+        var isShow by remember { mutableStateOf(it.getShownState()) }
+        it.Compose(isShow) {
+            isShow = it.getShownState()
+        }
     }
-//    destroyLayer?.let {
-//        it.padding = padding
-//        it.compose()
-//    }
+    destroyLayer?.let {
+        it.padding = padding
+        var isShow by remember { mutableStateOf(it.getShownState()) }
+        it.Compose(isShow) {
+            isShow = it.getShownState()
+        }
+    }
 }
 
+@Composable
 fun Navigate(
     path: String,
     pageMode: PageMode = PageMode.Multiple,

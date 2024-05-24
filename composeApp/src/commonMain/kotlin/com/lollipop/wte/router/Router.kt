@@ -6,14 +6,13 @@ import com.lollipop.navigator.Navigator
 import com.lollipop.navigator.PageInfo
 import com.lollipop.navigator.PageMode
 import com.lollipop.navigator.PageScope
-import com.lollipop.wte.router.Router.ItemAdd.Intent
 import com.lollipop.wte.ui.ContentPage
 import com.lollipop.wte.ui.ItemAddPanel
 import com.lollipop.wte.ui.ManagerPanel
 import com.lollipop.wte.ui.MenuInputPanel
 import com.lollipop.wte.ui.MenuOutputPanel
 
-sealed class Router<T : IntentInfo> : PageInfo {
+sealed class Router : PageInfo {
 
     override val path: String
         get() {
@@ -22,18 +21,18 @@ sealed class Router<T : IntentInfo> : PageInfo {
 
     override val mode: PageMode = PageMode.Multiple
 
-    abstract fun go(argumentBuild: T.() -> Unit = {})
-
     protected inline fun <reified T : IntentInfo> goWith(argumentBuild: T.() -> Unit) {
         Navigator.go(path, T::class.java.getConstructor().newInstance().apply(argumentBuild))
     }
 
-    data object Main : Router<Main.Intent>() {
+    protected fun goWithPath() {
+        Navigator.go(path, null)
+    }
 
-        class Intent : IntentInfo()
+    data object Main : Router() {
 
-        override fun go(argumentBuild: Intent.() -> Unit) {
-            goWith<Intent>(argumentBuild)
+        fun go() {
+            goWithPath()
         }
 
         override val content: @Composable PageScope.() -> Unit
@@ -41,11 +40,10 @@ sealed class Router<T : IntentInfo> : PageInfo {
 
     }
 
-    data object Manager : Router<Manager.Intent>() {
-        class Intent : IntentInfo()
+    data object Manager : Router() {
 
-        override fun go(argumentBuild: Intent.() -> Unit) {
-            goWith<Intent>(argumentBuild)
+        fun go() {
+            goWithPath()
         }
 
         override val content: @Composable PageScope.() -> Unit
@@ -53,14 +51,14 @@ sealed class Router<T : IntentInfo> : PageInfo {
 
     }
 
-    data object ItemAdd : Router<ItemAdd.Intent>() {
+    data object ItemAdd : Router() {
         class Intent : IntentInfo() {
 
             var nameValue by self("")
 
         }
 
-        override fun go(argumentBuild: Intent.() -> Unit) {
+        fun go(argumentBuild: Intent.() -> Unit) {
             goWith<Intent>(argumentBuild)
         }
 
@@ -69,22 +67,20 @@ sealed class Router<T : IntentInfo> : PageInfo {
 
     }
 
-    data object MenuInput : Router<MenuInput.Intent>() {
-        class Intent : IntentInfo()
+    data object MenuInput : Router() {
 
-        override fun go(argumentBuild: Intent.() -> Unit) {
-            goWith<Intent>(argumentBuild)
+        fun go() {
+            goWithPath()
         }
 
         override val content: @Composable PageScope.() -> Unit
             get() = { MenuInputPanel() }
     }
 
-    data object MenuOutput : Router<MenuOutput.Intent>() {
-        class Intent : IntentInfo()
+    data object MenuOutput : Router() {
 
-        override fun go(argumentBuild: Intent.() -> Unit) {
-            goWith<Intent>(argumentBuild)
+        fun go() {
+            goWithPath()
         }
 
         override val content: @Composable PageScope.() -> Unit

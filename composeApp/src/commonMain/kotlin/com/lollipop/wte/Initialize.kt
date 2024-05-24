@@ -1,7 +1,6 @@
 package com.lollipop.wte
 
 import com.lollipop.wte.initialize.InitLanguage
-import com.lollipop.wte.initialize.InitPageRouter
 
 object Initialize {
 
@@ -9,7 +8,6 @@ object Initialize {
 
     private val initTask = arrayOf(
         InitLanguage,
-        InitPageRouter
     )
 
     fun init(firstCallback: () -> Unit) {
