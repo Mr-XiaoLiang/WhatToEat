@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import com.lollipop.navigator2.NavRoot
 import com.lollipop.wte.router.Router
 import com.lollipop.wte.ui.ContentPage
+import com.lollipop.wte.ui.ItemAddPanel
 import com.lollipop.wte.ui.ManagerPanel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -37,6 +38,9 @@ fun App(padding: PaddingValues) {
         }
         register(Router.Manager.path) { padding, nav, intent, back ->
             ManagerPanel(padding, nav, back)
+        }
+        register(Router.ItemAdd.path) { padding, nav, intent, back ->
+            ItemAddPanel(padding, nav, intent, back)
         }
     }
 }

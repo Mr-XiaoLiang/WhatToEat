@@ -20,17 +20,12 @@ import androidx.compose.ui.unit.IntOffset
 
 fun interface Navigator2 {
 
-    fun navigate(page: String, args: Map<String, Any>?)
-}
-
-fun interface NavIntent {
-
-    fun intent(): Map<String, Any>
+    fun navigate(page: String, args: NavIntentInfo?)
 }
 
 class PageInfo(
     val path: String,
-    val args: Map<String, Any>
+    val args: NavIntentInfo
 ) {
     var state = PageState.START
 }
@@ -56,7 +51,7 @@ fun NavRoot(
     var isInit by remember { mutableStateOf(false) }
 
     val navigator2 = Navigator2 { page, args ->
-        pageStack.add(PageInfo(page, args ?: emptyMap()))
+        pageStack.add(PageInfo(page, args ?: NavIntentInfo()))
     }
 
     if (!isInit) {

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -29,7 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lollipop.navigator.PageScope
+import com.lollipop.navigator2.BackDispatcher
+import com.lollipop.navigator2.NavIntent
+import com.lollipop.navigator2.Navigator2
+import com.lollipop.navigator2.sync
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.info.ItemInfo
 import com.lollipop.wte.local.Strings
@@ -38,10 +42,12 @@ import com.lollipop.wte.router.Router
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PageScope.ItemAddPanel() {
+fun ItemAddPanel(
+    padding: PaddingValues, navigator2: Navigator2, navIntent: NavIntent, back: BackDispatcher
+) {
     val dataHelper = DataHelper
     val intent = Router.ItemAdd.Intent()
-    intent.sync()
+    intent.sync(navIntent.intent())
     var name by remember { mutableStateOf(intent.nameValue) }
     val selectedMap = remember { SnapshotStateMap<String, String>() }
     if (name.isNotEmpty() && selectedMap.isEmpty()) {
@@ -55,6 +61,7 @@ fun PageScope.ItemAddPanel() {
     val allTagList = remember { dataHelper.allTagList }
     var inputError by mutableStateOf(false)
     ActionBarGroup(
+        onBack = back,
         actionButtons = {}
     ) {
         Column(

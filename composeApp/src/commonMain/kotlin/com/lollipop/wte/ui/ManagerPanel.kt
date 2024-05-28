@@ -77,9 +77,12 @@ fun ManagerPanel(padding: PaddingValues, navigator2: Navigator2, back: BackDispa
             }
             IconButton(
                 onClick = {
-                    Router.ItemAdd.go {
-                        nameValue = ""
-                    }
+                    navigator2.navigate(
+                        Router.ItemAdd.path,
+                        Router.ItemAdd.Intent().apply {
+                            nameValue = ""
+                        }
+                    )
                 }
             ) {
                 Icon(Icons.Filled.Add, "")
@@ -90,7 +93,7 @@ fun ManagerPanel(padding: PaddingValues, navigator2: Navigator2, back: BackDispa
             modifier = Modifier.fillMaxSize()
         ) {
             items(itemList) { item ->
-                ItemCard(item) {
+                ItemCard(item, navigator2) {
                     pendingRemoveItem = item
                 }
             }
@@ -109,13 +112,16 @@ fun ManagerPanel(padding: PaddingValues, navigator2: Navigator2, back: BackDispa
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun ItemCard(item: ItemInfo, onRemoveClick: () -> Unit) {
+fun ItemCard(item: ItemInfo, navigator2: Navigator2, onRemoveClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().wrapContentHeight()
             .combinedClickable {
-                Router.ItemAdd.go {
-                    nameValue = item.name
-                }
+                navigator2.navigate(
+                    Router.ItemAdd.path,
+                    Router.ItemAdd.Intent().apply {
+                        nameValue = item.name
+                    }
+                )
             }
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
