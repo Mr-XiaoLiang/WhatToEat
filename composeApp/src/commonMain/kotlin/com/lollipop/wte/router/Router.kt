@@ -36,7 +36,9 @@ sealed class Router : PageInfo {
         }
 
         override val content: @Composable PageScope.() -> Unit
-            get() = { ContentPage() }
+            get() = {
+//                ContentPage()
+            }
 
     }
 
@@ -47,7 +49,9 @@ sealed class Router : PageInfo {
         }
 
         override val content: @Composable PageScope.() -> Unit
-            get() = { ManagerPanel() }
+            get() = {
+//                ManagerPanel()
+            }
 
     }
 

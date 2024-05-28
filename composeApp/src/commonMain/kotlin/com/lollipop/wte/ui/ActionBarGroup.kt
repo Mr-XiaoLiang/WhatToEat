@@ -1,5 +1,6 @@
 package com.lollipop.wte.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.lollipop.navigator.Navigator
 import com.lollipop.navigator.PageScope
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -21,10 +23,12 @@ import whattoeat.composeapp.generated.resources.arrow_back_24dp
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun PageScope.ActionBarGroup(
-    modifier: Modifier = Modifier.fillMaxSize(),
-    actionButtons: @Composable PageScope.() -> Unit,
-    content: @Composable PageScope.() -> Unit,
+fun ActionBarGroup(
+    isShowBack: Boolean = true,
+    onBack: () -> Unit = {},
+    modifier: Modifier = Modifier.fillMaxSize().background(Color.White),
+    actionButtons: @Composable () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -35,11 +39,9 @@ fun PageScope.ActionBarGroup(
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (Navigator.canBack) {
+                if (isShowBack) {
                     IconButton(
-                        onClick = {
-                            back()
-                        }
+                        onClick = onBack
                     ) {
                         Icon(painterResource(Res.drawable.arrow_back_24dp), "")
                     }

@@ -30,20 +30,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.lollipop.navigator.PageScope
+import com.lollipop.navigator2.BackDispatcher
+import com.lollipop.navigator2.Navigator2
 import com.lollipop.wte.Config
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.local.Strings
 import com.lollipop.wte.router.Router
 
 @Composable
-fun PageScope.ContentPage() {
+fun ContentPage(padding: PaddingValues, navigator2: Navigator2) {
     val dataHelper = DataHelper
     var showTagDialog by remember { mutableStateOf(false) }
     var showTagFilter by remember { mutableStateOf(false) }
     val selectorList = remember { dataHelper.selectTagList }
-    val scope = this
-    val padding = scope.padding
     MaterialTheme {
         ContentScaffold(
             padding,
@@ -55,7 +54,8 @@ fun PageScope.ContentPage() {
                     ) {
                         IconButton(
                             onClick = {
-                                Router.Manager.go()
+                                navigator2.navigate(Router.Manager.path, null)
+//                                Router.Manager.go()
                             },
                             modifier = Modifier.width(48.dp).height(48.dp).padding(12.dp)
                         ) {
