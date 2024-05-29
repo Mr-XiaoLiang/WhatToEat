@@ -26,6 +26,12 @@ fun interface Navigator2 {
     fun navigate(page: String, args: NavIntentInfo?)
 }
 
+class PageDefinition(
+    val path: String,
+    val mode: PageMode,
+    val content: PageContent
+)
+
 class PageInfo(
     val path: String,
     val args: NavIntentInfo
@@ -37,17 +43,17 @@ typealias BackDispatcher = () -> Unit
 
 typealias PageContent = @Composable (PaddingValues, Navigator2, NavIntent, BackDispatcher) -> Unit
 
+typealias PageRegister = (path: String, mode: PageMode, content: PageContent) -> Unit
+
 @Composable
 fun NavRoot(
     paddingValues: PaddingValues,
     initialPage: String,
     pageBackground: Color,
-    register: ((String, PageContent) -> Unit) -> Unit,
+    register: (PageRegister) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val pageMap = remember {
-        SnapshotStateMap<String, PageContent>()
-    }
+    val pageMap = remember { SnapshotStateMap<String, PageDefinition>() }
 
     val pageStack = remember { SnapshotStateList<PageInfo>() }
 
@@ -63,8 +69,8 @@ fun NavRoot(
     }
 
     if (!isInit) {
-        val registerCallback = { key: String, page: PageContent ->
-            pageMap[key] = page
+        val registerCallback = { key: String, mode: PageMode, page: PageContent ->
+            pageMap[key] = PageDefinition(key, mode, page)
         }
         register(registerCallback)
         navigator2.navigate(initialPage, null)
@@ -72,8 +78,9 @@ fun NavRoot(
     }
 
     pageStack.forEach { info ->
-        val pageContent = pageMap[info.path]
-        if (pageContent != null) {
+        val pageDefinition = pageMap[info.path]
+        if (pageDefinition != null) {
+            val pageContent = pageDefinition.content
             var isShown by mutableStateOf(false)
             when (info.state) {
                 PageState.START -> {

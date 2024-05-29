@@ -6,9 +6,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import com.lollipop.navigator2.NavRoot
 import com.lollipop.wte.router.Router
-import com.lollipop.wte.ui.ContentPage
-import com.lollipop.wte.ui.ItemAddPanel
-import com.lollipop.wte.ui.ManagerPanel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -19,28 +16,25 @@ fun App(padding: PaddingValues) {
         DataHelper.coroutineScope = coroutineScope
         DataHelper.load()
     }
-//    Navigator.init {
-//        Navigator.register(Router.Main)
-//        Navigator.register(Router.Manager)
-//        Navigator.register(Router.ItemAdd)
-//        Navigator.register(Router.MenuInput)
-//        Navigator.register(Router.MenuOutput)
-//    }
-//    NavigatorRoot(padding)
+
+    val pageList = arrayOf(
+        Router.Main,
+        Router.Manager,
+        Router.ItemAdd,
+        Router.MenuInput,
+        Router.MenuOutput
+    )
 
     NavRoot(
         padding,
         Router.Main.path,
         Color.White
     ) { register ->
-        register(Router.Main.path) { padding, nav, intent, back ->
-            ContentPage(padding, nav)
-        }
-        register(Router.Manager.path) { padding, nav, intent, back ->
-            ManagerPanel(padding, nav, back)
-        }
-        register(Router.ItemAdd.path) { padding, nav, intent, back ->
-            ItemAddPanel(padding, nav, intent, back)
+//        register(Router.Main.path, PageMode.Multiple) { padding, nav, intent, back ->
+//            ContentPage(padding, nav)
+//        }
+        pageList.forEach {
+            it.register(register)
         }
     }
 }

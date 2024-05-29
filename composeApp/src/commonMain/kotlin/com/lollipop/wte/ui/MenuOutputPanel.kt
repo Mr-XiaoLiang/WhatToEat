@@ -1,6 +1,7 @@
 package com.lollipop.wte.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -17,14 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import com.lollipop.navigator.PageScope
+import com.lollipop.navigator2.BackDispatcher
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.local.Strings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun PageScope.MenuOutputPanel() {
+fun MenuOutputPanel(paddingValues: PaddingValues, backDispatcher: BackDispatcher) {
     val dataHelper = DataHelper
     val clipboardManager = LocalClipboardManager.current
     var contentValue by mutableStateOf("")
@@ -34,6 +35,7 @@ fun PageScope.MenuOutputPanel() {
         }
     }
     ActionBarGroup(
+        onBack = backDispatcher,
         actionButtons = {}
     ) {
         Box(

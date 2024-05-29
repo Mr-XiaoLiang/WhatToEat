@@ -31,7 +31,6 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(project(":navigator"))
             implementation(project(":navigator2"))
         }
         desktopMain.dependencies {

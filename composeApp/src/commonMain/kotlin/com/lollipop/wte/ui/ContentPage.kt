@@ -55,7 +55,6 @@ fun ContentPage(padding: PaddingValues, navigator2: Navigator2) {
                         IconButton(
                             onClick = {
                                 navigator2.navigate(Router.Manager.path, null)
-//                                Router.Manager.go()
                             },
                             modifier = Modifier.width(48.dp).height(48.dp).padding(12.dp)
                         ) {
@@ -100,25 +99,7 @@ fun ContentPage(padding: PaddingValues, navigator2: Navigator2) {
                 FlagPanel(padding, false, dataHelper) {}
             }
         }
-
-//        var showContent by remember { mutableStateOf(false) }
-//
-//        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-//            Button(onClick = { showContent = !showContent }) {
-//                Text("Click me!")
-//            }
-//            Text("App Home: ${Platform.fileDir.path}")
-//            AnimatedVisibility(showContent) {
-//                Column(
-//                    Modifier.fillMaxWidth(),
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-//                }
-//            }
-//        }
     }
-
 }
 
 @Composable

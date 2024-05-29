@@ -63,26 +63,23 @@ fun ManagerPanel(padding: PaddingValues, navigator2: Navigator2, back: BackDispa
         actionButtons = {
             IconButton(
                 onClick = {
-                    Router.MenuInput.go()
+                    Router.MenuInput.go(navigator2)
                 }
             ) {
                 Icon(painterResource(Res.drawable.download_24dp), "")
             }
             IconButton(
                 onClick = {
-                    Router.MenuOutput.go()
+                    Router.MenuOutput.go(navigator2)
                 }
             ) {
                 Icon(painterResource(Res.drawable.upload_24dp), "")
             }
             IconButton(
                 onClick = {
-                    navigator2.navigate(
-                        Router.ItemAdd.path,
-                        Router.ItemAdd.Intent().apply {
-                            nameValue = ""
-                        }
-                    )
+                    Router.ItemAdd.go(navigator2) {
+                        nameValue = ""
+                    }
                 }
             ) {
                 Icon(Icons.Filled.Add, "")
@@ -116,12 +113,9 @@ fun ItemCard(item: ItemInfo, navigator2: Navigator2, onRemoveClick: () -> Unit) 
     Row(
         modifier = Modifier.fillMaxWidth().wrapContentHeight()
             .combinedClickable {
-                navigator2.navigate(
-                    Router.ItemAdd.path,
-                    Router.ItemAdd.Intent().apply {
-                        nameValue = item.name
-                    }
-                )
+                Router.ItemAdd.go(navigator2) {
+                    nameValue = item.name
+                }
             }
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically

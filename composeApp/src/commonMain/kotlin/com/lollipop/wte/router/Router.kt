@@ -1,55 +1,86 @@
 package com.lollipop.wte.router
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import com.lollipop.navigator.IntentInfo
-import com.lollipop.navigator.Navigator
-import com.lollipop.navigator.PageInfo
-import com.lollipop.navigator.PageMode
-import com.lollipop.navigator.PageScope
+import com.lollipop.navigator2.BackDispatcher
+import com.lollipop.navigator2.NavIntent
 import com.lollipop.navigator2.NavIntentInfo
+import com.lollipop.navigator2.Navigator2
+import com.lollipop.navigator2.PageMode
+import com.lollipop.navigator2.PageRegister
+import com.lollipop.wte.ui.ContentPage
+import com.lollipop.wte.ui.ItemAddPanel
+import com.lollipop.wte.ui.ManagerPanel
 import com.lollipop.wte.ui.MenuInputPanel
 import com.lollipop.wte.ui.MenuOutputPanel
 
-sealed class Router : PageInfo {
+sealed class Router {
 
-    override val path: String
+    open val path: String
         get() {
             return this::class.java.name
         }
 
-    override val mode: PageMode = PageMode.Multiple
+    open val mode: PageMode = PageMode.Multiple
 
-    protected inline fun <reified T : IntentInfo> goWith(argumentBuild: T.() -> Unit) {
-        Navigator.go(path, T::class.java.getConstructor().newInstance().apply(argumentBuild))
+    protected inline fun <reified T : NavIntentInfo> goWith(
+        navigator2: Navigator2,
+        argumentBuild: T.() -> Unit
+    ) {
+        navigator2.navigate(path, T::class.java.getConstructor().newInstance().apply(argumentBuild))
     }
 
-    protected fun goWithPath() {
-        Navigator.go(path, null)
+    protected fun goWithPath(navigator2: Navigator2) {
+        navigator2.navigate(path, null)
     }
+
+    fun register(register: PageRegister) {
+        register.invoke(path, mode) { p, n, i, b ->
+            pageContent(p, n, i, b)
+        }
+    }
+
+    @Composable
+    abstract fun pageContent(
+        padding: PaddingValues,
+        navigator2: Navigator2,
+        intent: NavIntent,
+        backDispatcher: BackDispatcher
+    )
 
     data object Main : Router() {
 
-        fun go() {
-            goWithPath()
+        fun go(navigator2: Navigator2) {
+            goWithPath(navigator2)
         }
 
-        override val content: @Composable PageScope.() -> Unit
-            get() = {
-//                ContentPage()
-            }
+        @Composable
+        override fun pageContent(
+            padding: PaddingValues,
+            navigator2: Navigator2,
+            intent: NavIntent,
+            backDispatcher: BackDispatcher
+        ) {
+            ContentPage(padding, navigator2)
+        }
 
     }
 
     data object Manager : Router() {
 
-        fun go() {
-            goWithPath()
+        fun go(navigator2: Navigator2) {
+            goWithPath(navigator2)
         }
 
-        override val content: @Composable PageScope.() -> Unit
-            get() = {
-//                ManagerPanel()
-            }
+        @Composable
+        override fun pageContent(
+            padding: PaddingValues,
+            navigator2: Navigator2,
+            intent: NavIntent,
+            backDispatcher: BackDispatcher
+        ) {
+            ManagerPanel(padding, navigator2, backDispatcher)
+        }
 
     }
 
@@ -60,31 +91,58 @@ sealed class Router : PageInfo {
 
         }
 
-        override val content: @Composable PageScope.() -> Unit
-            get() = {
-                // ItemAddPanel()
-            }
+        fun go(
+            navigator2: Navigator2,
+            argumentBuild: Intent.() -> Unit
+        ) {
+            goWith(navigator2, argumentBuild)
+        }
+
+        @Composable
+        override fun pageContent(
+            padding: PaddingValues,
+            navigator2: Navigator2,
+            intent: NavIntent,
+            backDispatcher: BackDispatcher
+        ) {
+            ItemAddPanel(padding, navigator2, intent, backDispatcher)
+        }
 
     }
 
     data object MenuInput : Router() {
 
-        fun go() {
-            goWithPath()
+        fun go(navigator2: Navigator2) {
+            goWithPath(navigator2)
         }
 
-        override val content: @Composable PageScope.() -> Unit
-            get() = { MenuInputPanel() }
+        @Composable
+        override fun pageContent(
+            padding: PaddingValues,
+            navigator2: Navigator2,
+            intent: NavIntent,
+            backDispatcher: BackDispatcher
+        ) {
+            MenuInputPanel(padding, backDispatcher)
+        }
     }
 
     data object MenuOutput : Router() {
 
-        fun go() {
-            goWithPath()
+        fun go(navigator2: Navigator2) {
+            goWithPath(navigator2)
         }
 
-        override val content: @Composable PageScope.() -> Unit
-            get() = { MenuOutputPanel() }
+        @Composable
+        override fun pageContent(
+            padding: PaddingValues,
+            navigator2: Navigator2,
+            intent: NavIntent,
+            backDispatcher: BackDispatcher
+        ) {
+            MenuOutputPanel(padding, backDispatcher)
+        }
+
     }
 
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -37,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
-import com.lollipop.navigator.PageScope
+import com.lollipop.navigator2.BackDispatcher
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.info.ItemInfo
 import com.lollipop.wte.local.Strings
@@ -50,7 +51,7 @@ import whattoeat.composeapp.generated.resources.Res
 import whattoeat.composeapp.generated.resources.double_arrow_24dp
 
 @Composable
-fun PageScope.MenuInputPanel() {
+fun MenuInputPanel(paddingValues: PaddingValues, backDispatcher: BackDispatcher) {
     val dataHelper = DataHelper
     val clipboardManager = LocalClipboardManager.current
     var pendingMergeInfo by remember { mutableStateOf<ItemInfo?>(null) }
@@ -62,6 +63,7 @@ fun PageScope.MenuInputPanel() {
     var inputValue by remember { mutableStateOf("") }
     var errorInfo by remember { mutableStateOf("") }
     ActionBarGroup(
+        onBack = backDispatcher,
         actionButtons = {}
     ) {
         Column(
