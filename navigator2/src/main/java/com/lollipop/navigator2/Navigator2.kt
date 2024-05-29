@@ -11,12 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 fun interface Navigator2 {
 
@@ -27,7 +30,7 @@ class PageInfo(
     val path: String,
     val args: NavIntentInfo
 ) {
-    var state = PageState.START
+    var state = PageState.INIT
 }
 
 typealias BackDispatcher = () -> Unit
@@ -41,7 +44,7 @@ fun NavRoot(
     pageBackground: Color,
     register: ((String, PageContent) -> Unit) -> Unit,
 ) {
-
+    val coroutineScope = rememberCoroutineScope()
     val pageMap = remember {
         SnapshotStateMap<String, PageContent>()
     }
@@ -51,7 +54,12 @@ fun NavRoot(
     var isInit by remember { mutableStateOf(false) }
 
     val navigator2 = Navigator2 { page, args ->
-        pageStack.add(PageInfo(page, args ?: NavIntentInfo()))
+        val pageInf = PageInfo(page, args ?: NavIntentInfo()).apply {
+            if (page == initialPage && pageStack.isEmpty()) {
+                state = PageState.START
+            }
+        }
+        pageStack.add(pageInf)
     }
 
     if (!isInit) {
@@ -74,6 +82,15 @@ fun NavRoot(
 
                 PageState.STOP -> {
                     isShown = false
+                }
+
+                PageState.INIT -> {
+                    isShown = false
+                    coroutineScope.launch {
+                        delay(10)
+                        isShown = true
+                        info.state = PageState.START
+                    }
                 }
             }
             AnimatedVisibility(
@@ -103,5 +120,5 @@ fun NavRoot(
 }
 
 enum class PageState {
-    START, STOP
+    INIT, START, STOP
 }
