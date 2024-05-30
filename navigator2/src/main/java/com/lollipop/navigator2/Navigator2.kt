@@ -161,19 +161,19 @@ fun NavRoot(
 
     val maxIndex = pageStack.size - 1
     var firstIndex = 0
-//    var shownPageCount = 0
-//    for (i in maxIndex downTo 0) {
-//        val info = pageStack[i]
-//        if (info.state == PageState.START) {
-//            shownPageCount++
-//        }
-//        if (shownPageCount > 1) {
-//            // 只保留最后2个可见的页面就好了
-//            firstIndex = i
-//            break
-//        }
-//    }
-    for (i in firstIndex..maxIndex) {
+    var shownPageCount = 0
+    for (i in maxIndex downTo 0) {
+        val info = pageStack[i]
+        if (info.state == PageState.START) {
+            shownPageCount++
+        }
+        if (shownPageCount > 1) {
+            // 只保留最后2个可见的页面就好了
+            firstIndex = i
+            break
+        }
+    }
+    for (i in 0..maxIndex) {
         val info = pageStack[i]
         val pageDefinition = pageMap[info.path]
         if (pageDefinition != null) {
@@ -196,6 +196,9 @@ fun NavRoot(
                         info.state = PageState.START
                     }
                 }
+            }
+            if (i < firstIndex) {
+                continue
             }
             AnimatedVisibility(
                 visible = isShown,
