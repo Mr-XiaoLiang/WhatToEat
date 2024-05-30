@@ -149,7 +149,6 @@ fun ItemAddPanel(
                         intent.nameValue = ""
                         selectedMap.clear()
                         back()
-//                        Router.Main.go(navigator2)
                     }
                 )
             }
