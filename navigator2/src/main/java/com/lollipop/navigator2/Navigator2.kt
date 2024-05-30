@@ -62,7 +62,21 @@ private class Navigator2Impl(
 
     val pageStack = SnapshotStateList<PageInfo>()
 
+    private fun clearStoppedPage() {
+        while (pageStack.isNotEmpty()) {
+            val last = pageStack.last()
+            if (last.state == PageState.STOP) {
+                pageStack.removeLastOrNull()
+            } else {
+                // 倒着找，找不到停止的页面就停下
+                break
+            }
+        }
+    }
+
     override fun navigate(page: String, args: NavIntentInfo?) {
+        // 执行之前做清理
+        clearStoppedPage()
         val pageDefinition = pageMap[page]
         if (pageDefinition != null) {
             if (pageStack.isEmpty()) {
@@ -84,10 +98,11 @@ private class Navigator2Impl(
                         if (find != null) {
                             val maxIndex = pageStack.size - 1
                             for (i in maxIndex downTo 0) {
-                                val info = pageStack[maxIndex]
+                                val info = pageStack[i]
                                 if (info.path != page) {
                                     // 现在不能移除，要做动画
                                     pageStack[i] = info.clone(PageState.STOP)
+                                    println("close page = ${info.path}")
                                 } else {
                                     break
                                 }
