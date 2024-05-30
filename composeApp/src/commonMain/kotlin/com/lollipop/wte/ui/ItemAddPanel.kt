@@ -35,7 +35,6 @@ import com.lollipop.navigator2.NavIntent
 import com.lollipop.navigator2.Navigator2
 import com.lollipop.navigator2.sync
 import com.lollipop.wte.DataHelper
-import com.lollipop.wte.info.ItemInfo
 import com.lollipop.wte.local.Strings
 import com.lollipop.wte.router.Router
 
@@ -141,14 +140,15 @@ fun ItemAddPanel(
                         Text(text = Strings.current.confirm)
                     },
                     onClick = {
-                        dataHelper.putInfo(
-                            ItemInfo(name).apply {
-                                tagList.addAll(selectedMap.keys)
-                            }
-                        )
-                        intent.nameValue = ""
-                        selectedMap.clear()
-                        back()
+//                        dataHelper.putInfo(
+//                            ItemInfo(name).apply {
+//                                tagList.addAll(selectedMap.keys)
+//                            }
+//                        )
+//                        intent.nameValue = ""
+//                        selectedMap.clear()
+//                        back()
+                        Router.Main.go(navigator2)
                     }
                 )
             }

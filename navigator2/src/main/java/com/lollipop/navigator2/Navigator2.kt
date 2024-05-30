@@ -3,7 +3,10 @@ package com.lollipop.navigator2
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +40,13 @@ class PageInfo(
     val args: NavIntentInfo
 ) {
     var state = PageState.INIT
+
+    fun clone(newState: PageState): PageInfo {
+        val pageInfo = PageInfo(path, args)
+        pageInfo.state = newState
+        return pageInfo
+    }
+
 }
 
 typealias BackDispatcher = () -> Unit
@@ -45,6 +55,70 @@ typealias PageContent = @Composable (PaddingValues, Navigator2, NavIntent, BackD
 
 typealias PageRegister = (path: String, mode: PageMode, content: PageContent) -> Unit
 
+private class Navigator2Impl(
+    val initialPage: String,
+    val pageMap: Map<String, PageDefinition>,
+) : Navigator2 {
+
+    val pageStack = SnapshotStateList<PageInfo>()
+
+    override fun navigate(page: String, args: NavIntentInfo?) {
+        val pageDefinition = pageMap[page]
+        if (pageDefinition != null) {
+            if (pageStack.isEmpty()) {
+                val pageInfo = PageInfo(page, args ?: NavIntentInfo()).apply {
+                    if (page == initialPage) {
+                        state = PageState.START
+                    }
+                }
+                pageStack.add(pageInfo)
+            } else {
+                when (pageDefinition.mode) {
+                    PageMode.Multiple -> {
+                        pageStack.add(PageInfo(page, args ?: NavIntentInfo()))
+                    }
+
+                    PageMode.Single -> {
+                        val find = pageStack.find { it.path == page }
+                        // 单例模式最难搞，需要找到已有的，然后把顶层的移除
+                        if (find != null) {
+                            val maxIndex = pageStack.size - 1
+                            for (i in maxIndex downTo 0) {
+                                val info = pageStack[maxIndex]
+                                if (info.path != page) {
+                                    // 现在不能移除，要做动画
+                                    pageStack[i] = info.clone(PageState.STOP)
+                                } else {
+                                    break
+                                }
+                            }
+                        } else {
+                            pageStack.add(PageInfo(page, args ?: NavIntentInfo()))
+                        }
+                    }
+
+                    PageMode.TopSingle -> {
+                        val last = pageStack.last()
+                        if (last.path != page) {
+                            pageStack.add(PageInfo(page, args ?: NavIntentInfo()))
+                        } else {
+                            // 还是得移除再添加，否则列表不刷新
+                            pageStack.remove(last)
+                            pageStack.add(PageInfo(page, args ?: NavIntentInfo()).apply {
+                                // 状态动画就不要再执行了
+                                state = PageState.START
+                            })
+                        }
+                    }
+                }
+            }
+        }
+        println("pageStack.size = ${pageStack.size}")
+    }
+
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavRoot(
     paddingValues: PaddingValues,
@@ -55,18 +129,11 @@ fun NavRoot(
     val coroutineScope = rememberCoroutineScope()
     val pageMap = remember { SnapshotStateMap<String, PageDefinition>() }
 
-    val pageStack = remember { SnapshotStateList<PageInfo>() }
+    val navigator2 = remember { Navigator2Impl(initialPage, pageMap) }
+
+    val pageStack = remember { navigator2.pageStack }
 
     var isInit by remember { mutableStateOf(false) }
-
-    val navigator2 = Navigator2 { page, args ->
-        val pageInf = PageInfo(page, args ?: NavIntentInfo()).apply {
-            if (page == initialPage && pageStack.isEmpty()) {
-                state = PageState.START
-            }
-        }
-        pageStack.add(pageInf)
-    }
 
     if (!isInit) {
         val registerCallback = { key: String, mode: PageMode, page: PageContent ->
@@ -109,7 +176,17 @@ fun NavRoot(
                     IntOffset(it.width, 0)
                 }
             ) {
-                Box(modifier = Modifier.fillMaxSize().background(pageBackground)) {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                        .background(pageBackground)
+                        .clickable(
+                            onClick = {
+                                // 啥也不做，就是拦截点击事件
+                            },
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
+                ) {
                     pageContent.invoke(
                         paddingValues,
                         navigator2,

@@ -50,6 +50,8 @@ sealed class Router {
 
     data object Main : Router() {
 
+        override val mode: PageMode = PageMode.Single
+
         fun go(navigator2: Navigator2) {
             goWithPath(navigator2)
         }
