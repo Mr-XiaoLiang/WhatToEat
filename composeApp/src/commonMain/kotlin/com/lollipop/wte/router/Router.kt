@@ -2,7 +2,6 @@ package com.lollipop.wte.router
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import com.lollipop.navigator2.BackDispatcher
 import com.lollipop.navigator2.NavIntent
 import com.lollipop.navigator2.NavIntentInfo
 import com.lollipop.navigator2.Navigator2
@@ -35,8 +34,8 @@ sealed class Router {
     }
 
     fun register(register: PageRegister) {
-        register.invoke(path, mode) { p, n, i, b ->
-            pageContent(p, n, i, b)
+        register.invoke(path, mode) { p, n, i ->
+            pageContent(p, n, i)
         }
     }
 
@@ -45,7 +44,6 @@ sealed class Router {
         padding: PaddingValues,
         navigator2: Navigator2,
         intent: NavIntent,
-        backDispatcher: BackDispatcher
     )
 
     data object Main : Router() {
@@ -61,7 +59,6 @@ sealed class Router {
             padding: PaddingValues,
             navigator2: Navigator2,
             intent: NavIntent,
-            backDispatcher: BackDispatcher
         ) {
             ContentPage(padding, navigator2)
         }
@@ -79,9 +76,8 @@ sealed class Router {
             padding: PaddingValues,
             navigator2: Navigator2,
             intent: NavIntent,
-            backDispatcher: BackDispatcher
         ) {
-            ManagerPanel(padding, navigator2, backDispatcher)
+            ManagerPanel(padding, navigator2)
         }
 
     }
@@ -105,9 +101,8 @@ sealed class Router {
             padding: PaddingValues,
             navigator2: Navigator2,
             intent: NavIntent,
-            backDispatcher: BackDispatcher
         ) {
-            ItemAddPanel(padding, navigator2, intent, backDispatcher)
+            ItemAddPanel(padding, navigator2, intent)
         }
 
     }
@@ -123,9 +118,8 @@ sealed class Router {
             padding: PaddingValues,
             navigator2: Navigator2,
             intent: NavIntent,
-            backDispatcher: BackDispatcher
         ) {
-            MenuInputPanel(padding, backDispatcher)
+            MenuInputPanel(padding, navigator2)
         }
     }
 
@@ -140,9 +134,8 @@ sealed class Router {
             padding: PaddingValues,
             navigator2: Navigator2,
             intent: NavIntent,
-            backDispatcher: BackDispatcher
         ) {
-            MenuOutputPanel(padding, backDispatcher)
+            MenuOutputPanel(padding, navigator2)
         }
 
     }

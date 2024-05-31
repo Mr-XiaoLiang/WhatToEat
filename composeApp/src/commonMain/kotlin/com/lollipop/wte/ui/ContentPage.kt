@@ -30,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.lollipop.navigator2.BackDispatcher
 import com.lollipop.navigator2.Navigator2
 import com.lollipop.wte.Config
 import com.lollipop.wte.DataHelper

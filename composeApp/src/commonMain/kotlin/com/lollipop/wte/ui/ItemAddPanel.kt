@@ -30,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lollipop.navigator2.BackDispatcher
 import com.lollipop.navigator2.NavIntent
 import com.lollipop.navigator2.Navigator2
 import com.lollipop.navigator2.sync
@@ -43,7 +42,7 @@ import com.lollipop.wte.router.Router
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ItemAddPanel(
-    padding: PaddingValues, navigator2: Navigator2, navIntent: NavIntent, back: BackDispatcher
+    padding: PaddingValues, navigator2: Navigator2, navIntent: NavIntent
 ) {
     val dataHelper = DataHelper
     val intent = Router.ItemAdd.Intent()
@@ -61,7 +60,7 @@ fun ItemAddPanel(
     val allTagList = remember { dataHelper.allTagList }
     var inputError by mutableStateOf(false)
     ActionBarGroup(
-        onBack = back,
+        onBack = { navigator2.back() },
         actionButtons = {}
     ) {
         Column(
@@ -148,7 +147,7 @@ fun ItemAddPanel(
                         )
                         intent.nameValue = ""
                         selectedMap.clear()
-                        back()
+                        navigator2.back()
                     }
                 )
             }

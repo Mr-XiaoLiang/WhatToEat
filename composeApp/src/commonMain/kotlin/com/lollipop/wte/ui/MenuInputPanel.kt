@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
-import com.lollipop.navigator2.BackDispatcher
+import com.lollipop.navigator2.Navigator2
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.info.ItemInfo
 import com.lollipop.wte.local.Strings
@@ -51,7 +51,7 @@ import whattoeat.composeapp.generated.resources.Res
 import whattoeat.composeapp.generated.resources.double_arrow_24dp
 
 @Composable
-fun MenuInputPanel(paddingValues: PaddingValues, backDispatcher: BackDispatcher) {
+fun MenuInputPanel(paddingValues: PaddingValues, navigator2: Navigator2) {
     val dataHelper = DataHelper
     val clipboardManager = LocalClipboardManager.current
     var pendingMergeInfo by remember { mutableStateOf<ItemInfo?>(null) }
@@ -63,7 +63,7 @@ fun MenuInputPanel(paddingValues: PaddingValues, backDispatcher: BackDispatcher)
     var inputValue by remember { mutableStateOf("") }
     var errorInfo by remember { mutableStateOf("") }
     ActionBarGroup(
-        onBack = backDispatcher,
+        onBack = { navigator2.back() },
         actionButtons = {}
     ) {
         Column(

@@ -18,14 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import com.lollipop.navigator2.BackDispatcher
+import com.lollipop.navigator2.Navigator2
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.local.Strings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun MenuOutputPanel(paddingValues: PaddingValues, backDispatcher: BackDispatcher) {
+fun MenuOutputPanel(paddingValues: PaddingValues, navigator2: Navigator2) {
     val dataHelper = DataHelper
     val clipboardManager = LocalClipboardManager.current
     var contentValue by mutableStateOf("")
@@ -35,7 +35,7 @@ fun MenuOutputPanel(paddingValues: PaddingValues, backDispatcher: BackDispatcher
         }
     }
     ActionBarGroup(
-        onBack = backDispatcher,
+        onBack = { navigator2.back() },
         actionButtons = {}
     ) {
         Box(

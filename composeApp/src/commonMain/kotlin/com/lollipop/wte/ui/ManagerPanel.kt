@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
-import com.lollipop.navigator2.BackDispatcher
 import com.lollipop.navigator2.Navigator2
 import com.lollipop.wte.DataHelper
 import com.lollipop.wte.info.ItemInfo
@@ -52,14 +51,14 @@ import whattoeat.composeapp.generated.resources.upload_24dp
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun ManagerPanel(padding: PaddingValues, navigator2: Navigator2, back: BackDispatcher) {
+fun ManagerPanel(padding: PaddingValues, navigator2: Navigator2) {
     val dataHelper = DataHelper
     val itemList = remember { dataHelper.dataList }
     var pendingRemoveItem by remember { mutableStateOf(ItemInfo.EMPTY) }
 
     ActionBarGroup(
         isShowBack = true,
-        onBack = back,
+        onBack = { navigator2.back() },
         actionButtons = {
             IconButton(
                 onClick = {
