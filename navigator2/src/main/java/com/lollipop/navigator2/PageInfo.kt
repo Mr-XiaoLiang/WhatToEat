@@ -24,5 +24,5 @@ enum class PageState {
 
 typealias PageContent = @Composable (PaddingValues, Navigator2, NavIntent) -> Unit
 
-typealias PageRegister = (path: String, mode: PageMode, content: PageContent) -> Unit
+typealias PageRegister = (page: PageDefinition) -> Unit
 

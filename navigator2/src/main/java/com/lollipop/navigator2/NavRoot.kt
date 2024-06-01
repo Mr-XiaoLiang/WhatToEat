@@ -1,8 +1,6 @@
 package com.lollipop.navigator2
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.IntOffset
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -41,8 +38,8 @@ fun NavRoot(
     var isInit by remember { mutableStateOf(false) }
 
     if (!isInit) {
-        val registerCallback = { key: String, mode: PageMode, page: PageContent ->
-            pageMap[key] = PageDefinition(key, mode, page)
+        val registerCallback = { page: PageDefinition ->
+            pageMap[page.path] = page
         }
         register(registerCallback)
         navigator2.navigate(initialPage, null)
@@ -92,12 +89,8 @@ fun NavRoot(
             }
             AnimatedVisibility(
                 visible = isShown,
-                enter = slideIn {
-                    IntOffset(it.width, 0)
-                },
-                exit = slideOut {
-                    IntOffset(it.width, 0)
-                }
+                enter = pageDefinition.enter,
+                exit = pageDefinition.exit
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize()

@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import com.lollipop.navigator2.NavIntent
 import com.lollipop.navigator2.NavIntentInfo
 import com.lollipop.navigator2.Navigator2
+import com.lollipop.navigator2.PageDefinition
 import com.lollipop.navigator2.PageMode
 import com.lollipop.navigator2.PageRegister
 import com.lollipop.wte.ui.ContentPage
@@ -34,9 +35,15 @@ sealed class Router {
     }
 
     fun register(register: PageRegister) {
-        register.invoke(path, mode) { p, n, i ->
-            pageContent(p, n, i)
-        }
+        register.invoke(
+            PageDefinition(
+                path = path,
+                mode = mode,
+                content = { p, n, i ->
+                    pageContent(p, n, i)
+                }
+            )
+        )
     }
 
     @Composable

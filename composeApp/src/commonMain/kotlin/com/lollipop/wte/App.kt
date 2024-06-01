@@ -33,9 +33,6 @@ fun App(padding: PaddingValues) {
         Router.Main.path,
         Color.White
     ) { register ->
-//        register(Router.Main.path, PageMode.Multiple) { padding, nav, intent, back ->
-//            ContentPage(padding, nav)
-//        }
         pageList.forEach {
             it.register(register)
         }
